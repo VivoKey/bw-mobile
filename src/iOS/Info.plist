@@ -19,13 +19,23 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.8bit.bitwarden.url</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>bitwarden</string>
 				<string>org-appextension-feature-password-management</string>
 			</array>
+		</dict>
+		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.8bit.bitwarden.url</string>
+			<string>VivokeyOauth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.vivokey.oauth</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
 		</dict>
 	</array>
 	<key>CFBundleLocalizations</key>

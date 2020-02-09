@@ -45,7 +45,7 @@ namespace Bit.iOS
         {
             Forms.Init();
             InitApp();
-
+            global::Xamarin.Auth.Presenters.XamarinIOS.AuthenticationConfiguration.Init();
             _deviceActionService = ServiceContainer.Resolve<IDeviceActionService>("deviceActionService");
             _messagingService = ServiceContainer.Resolve<IMessagingService>("messagingService");
             _broadcasterService = ServiceContainer.Resolve<IBroadcasterService>("broadcasterService");
@@ -250,7 +250,16 @@ namespace Bit.iOS
         {
             _pushHandler?.OnMessageReceived(userInfo);
         }
+        public override bool OpenUrl(UIApplication app, NSUrl url, NSDictionary options)
+        {
+            // Convert NSUrl to Uri
+            var uri = new Uri(url.AbsoluteString);
 
+            // Load redirectUrl page
+            LoginPageViewModel._authenticator.OnPageLoading(uri);
+
+            return true;
+        }
         public void InitApp()
         {
             if(ServiceContainer.RegisteredServices.Count > 0)

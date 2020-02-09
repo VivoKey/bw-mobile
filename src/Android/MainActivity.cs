@@ -13,6 +13,7 @@ using Android.Content;
 using Bit.Droid.Utilities;
 using Bit.Droid.Receivers;
 using Bit.App.Models;
+using Bit.App.Pages;
 using Bit.Core.Enums;
 using Android.Nfc;
 using Bit.App.Utilities;
@@ -22,7 +23,7 @@ using Android.Support.V4.Content;
 namespace Bit.Droid
 {
     [Activity(
-        Label = "Bitwarden",
+        Label = "Vivokey Vault",
         Icon = "@mipmap/ic_launcher",
         Theme = "@style/LightTheme.Splash",
         MainLauncher = true,
@@ -56,6 +57,7 @@ namespace Bit.Droid
             var clearClipboardIntent = new Intent(this, typeof(ClearClipboardAlarmReceiver));
             _clearClipboardPendingIntent = PendingIntent.GetBroadcast(this, 0, clearClipboardIntent,
                 PendingIntentFlags.UpdateCurrent);
+            global::Xamarin.Auth.Presenters.XamarinAndroid.AuthenticationConfiguration.Init(this, savedInstanceState);
 
             var policy = new StrictMode.ThreadPolicy.Builder().PermitAll().Build();
             StrictMode.SetThreadPolicy(policy);
@@ -382,6 +384,27 @@ namespace Bit.Droid
             alarmManager.Set(AlarmType.Rtc, triggerMs, _clearClipboardPendingIntent);
         }
 
+        [Activity(Label = "CustomUrlSchemeInterceptorActivity", NoHistory = true, LaunchMode = LaunchMode.SingleTop)]
+        [IntentFilter(
+    new[] { Intent.ActionView },
+    Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
+    DataSchemes = new[] { "com.vivokey.oauth" },
+    DataPath = "/oauth2redirect")]
+        public class CustomUrlSchemeInterceptorActivity : Activity
+        {
+            protected override void OnCreate(Bundle savedInstanceState)
+            {
+                base.OnCreate(savedInstanceState);
+
+                // Convert Android.Net.Url to Uri
+                var uri = new Uri(Intent.Data.ToString());
+
+                // Load redirectUrl page
+                LoginPageViewModel._authenticator.OnPageLoading(uri);
+
+                Finish();
+            }
+        }
         private void StartEventAlarm()
         {
             var alarmManager = GetSystemService(AlarmService) as AlarmManager;

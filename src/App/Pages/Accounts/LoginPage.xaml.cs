@@ -44,11 +44,11 @@ namespace Bit.App.Pages
             }
         }
 
-        private async void LogIn_Clicked(object sender, EventArgs e)
+        private void LogIn_Clicked(object sender, EventArgs e)
         {
             if(DoOnce())
             {
-                await _vm.LogInAsync();
+                _vm.DoAuth();
             }
         }
 

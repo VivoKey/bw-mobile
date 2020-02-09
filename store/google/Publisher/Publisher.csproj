@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.42.0.1796" />
+    <PackageReference Include="Xamarin.Auth" Version="1.7.0" />
   </ItemGroup>
 
 </Project>

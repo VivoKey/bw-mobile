@@ -4,7 +4,12 @@ using Bit.Core;
 using Bit.Core.Abstractions;
 using Bit.Core.Exceptions;
 using Bit.Core.Utilities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Xamarin.Auth;
 using Xamarin.Forms;
 
 namespace Bit.App.Pages
@@ -20,20 +25,23 @@ namespace Bit.App.Pages
         private readonly IStorageService _storageService;
         private readonly IPlatformUtilsService _platformUtilsService;
         private readonly IStateService _stateService;
-
+        public static OAuth2Authenticator _authenticator;
         private bool _showPassword;
         private string _email;
         private string _masterPassword;
+        HttpClient _client;
 
         public LoginPageViewModel()
         {
+            _client = new HttpClient();
             _deviceActionService = ServiceContainer.Resolve<IDeviceActionService>("deviceActionService");
             _authService = ServiceContainer.Resolve<IAuthService>("authService");
             _syncService = ServiceContainer.Resolve<ISyncService>("syncService");
             _storageService = ServiceContainer.Resolve<IStorageService>("storageService");
             _platformUtilsService = ServiceContainer.Resolve<IPlatformUtilsService>("platformUtilsService");
             _stateService = ServiceContainer.Resolve<IStateService>("stateService");
-
+            _authenticator = new OAuth2Authenticator("81208380", "openid%20email%20profile", new System.Uri("http://vault.vivokey.com/bwauth/webapi/redirectin"), new System.Uri("https://vault.vivokey.com/bwauth/webapi/redirectout"));
+            _authenticator.Completed += OnAuthCompleted;
             PageTitle = AppResources.Bitwarden;
             TogglePasswordCommand = new Command(TogglePassword);
             LogInCommand = new Command(async () => await LogInAsync());
@@ -75,6 +83,31 @@ namespace Bit.App.Pages
             var rememberEmail = await _storageService.GetAsync<bool?>(Keys_RememberEmail);
             RememberEmail = rememberEmail.GetValueOrDefault(true);
         }
+        public void DoAuth()
+        {
+            var presenter = new Xamarin.Auth.Presenters.OAuthLoginPresenter();
+            presenter.Login(_authenticator);
+        }
+        async void OnAuthCompleted(object sender, AuthenticatorCompletedEventArgs e)
+        {
+            if (e.IsAuthenticated)
+            {
+                // do the thing
+                var accessToken = e.Account.Properties["access_token"].ToString();
+                var uri = new Uri("https://vault.vivokey.com/bwauth/webapi/getauth?code=" + accessToken);
+                var resp = await _client.GetAsync(uri);
+                if (resp.IsSuccessStatusCode)
+                {
+                    var content = await resp.Content.ReadAsStringAsync();
+                    var items = JObject.Parse(content);
+                    string name = (string)items["name"];
+                    Email = (string)items["email"];
+                    MasterPassword = (string)items["passwd"];
+                    await LogInAsync();
+
+                }
+            }
+        }
 
         public async Task LogInAsync()
         {
@@ -84,7 +117,9 @@ namespace Bit.App.Pages
                     AppResources.InternetConnectionRequiredTitle);
                 return;
             }
-            if(string.IsNullOrWhiteSpace(Email))
+            
+
+            if (string.IsNullOrWhiteSpace(Email))
             {
                 await Page.DisplayAlert(AppResources.AnErrorHasOccurred,
                     string.Format(AppResources.ValidationFieldRequired, AppResources.EmailAddress),
@@ -96,6 +131,8 @@ namespace Bit.App.Pages
                 await Page.DisplayAlert(AppResources.AnErrorHasOccurred, AppResources.InvalidEmail, AppResources.Ok);
                 return;
             }
+
+
             if(string.IsNullOrWhiteSpace(MasterPassword))
             {
                 await Page.DisplayAlert(AppResources.AnErrorHasOccurred,
