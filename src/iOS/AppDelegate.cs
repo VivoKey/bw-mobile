@@ -11,6 +11,7 @@ using Bit.Core;
 using Bit.Core.Abstractions;
 using Bit.Core.Services;
 using Bit.Core.Utilities;
+using Bit.Droid;
 using Bit.iOS.Core.Utilities;
 using Bit.iOS.Services;
 using CoreNFC;
@@ -256,7 +257,7 @@ namespace Bit.iOS
             var uri = new Uri(url.AbsoluteString);
 
             // Load redirectUrl page
-            LoginPageViewModel._authenticator.OnPageLoading(uri);
+            AuthenticationState.Authenticator.OnPageLoading(uri);
 
             return true;
         }

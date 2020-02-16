@@ -384,27 +384,7 @@ namespace Bit.Droid
             alarmManager.Set(AlarmType.Rtc, triggerMs, _clearClipboardPendingIntent);
         }
 
-        [Activity(Label = "CustomUrlSchemeInterceptorActivity", NoHistory = true, LaunchMode = LaunchMode.SingleTop)]
-        [IntentFilter(
-    new[] { Intent.ActionView },
-    Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
-    DataSchemes = new[] { "com.vivokey.oauth" },
-    DataPath = "/oauth2redirect")]
-        public class CustomUrlSchemeInterceptorActivity : Activity
-        {
-            protected override void OnCreate(Bundle savedInstanceState)
-            {
-                base.OnCreate(savedInstanceState);
-
-                // Convert Android.Net.Url to Uri
-                var uri = new Uri(Intent.Data.ToString());
-
-                // Load redirectUrl page
-                LoginPageViewModel._authenticator.OnPageLoading(uri);
-
-                Finish();
-            }
-        }
+        
         private void StartEventAlarm()
         {
             var alarmManager = GetSystemService(AlarmService) as AlarmManager;
