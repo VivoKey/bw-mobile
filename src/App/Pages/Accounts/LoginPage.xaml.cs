@@ -18,14 +18,11 @@ namespace Bit.App.Pages
             _vm = BindingContext as LoginPageViewModel;
             _vm.Page = this;
             _vm.Email = email;
-            MasterPasswordEntry = _masterPassword;
             if(Device.RuntimePlatform == Device.Android)
             {
                 ToolbarItems.RemoveAt(0);
             }
 
-            _email.ReturnType = ReturnType.Next;
-            _email.ReturnCommand = new Command(() => _masterPassword.Focus());
         }
 
         public Entry MasterPasswordEntry { get; set; }
@@ -34,14 +31,7 @@ namespace Bit.App.Pages
         {
             base.OnAppearing();
             await _vm.InitAsync();
-            if(string.IsNullOrWhiteSpace(_vm.Email))
-            {
-                RequestFocus(_email);
-            }
-            else
-            {
-                RequestFocus(_masterPassword);
-            }
+           
         }
 
         private void LogIn_Clicked(object sender, EventArgs e)

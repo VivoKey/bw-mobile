@@ -318,36 +318,11 @@ namespace Bit.App.Pages
             var securityItems = new List<SettingsPageListItem>
             {
                 new SettingsPageListItem { Name = AppResources.LockOptions, SubLabel = _lockOptionValue },
-                new SettingsPageListItem
-                {
-                    Name = AppResources.UnlockWithPIN,
-                    SubLabel = _pin ? AppResources.Enabled : AppResources.Disabled
-                },
-                new SettingsPageListItem { Name = AppResources.LockNow },
-                new SettingsPageListItem { Name = AppResources.TwoStepLogin }
+                new SettingsPageListItem { Name = AppResources.LockNow }
             };
-            if(_supportsFingerprint || _fingerprint)
-            {
-                var fingerprintName = AppResources.Fingerprint;
-                if(Device.RuntimePlatform == Device.iOS)
-                {
-                    fingerprintName = _deviceActionService.SupportsFaceBiometric() ? AppResources.FaceID :
-                        AppResources.TouchID;
-                }
-                else if(Device.RuntimePlatform == Device.Android && _deviceActionService.UseNativeBiometric())
-                {
-                    fingerprintName = AppResources.Biometrics;
-                }
-                var item = new SettingsPageListItem
-                {
-                    Name = string.Format(AppResources.UnlockWith, fingerprintName),
-                    SubLabel = _fingerprint ? AppResources.Enabled : AppResources.Disabled
-                };
-                securityItems.Insert(1, item);
-            }
+
             var accountItems = new List<SettingsPageListItem>
             {
-                new SettingsPageListItem { Name = AppResources.ChangeMasterPassword },
                 new SettingsPageListItem { Name = AppResources.FingerprintPhrase },
                 new SettingsPageListItem { Name = AppResources.LogOut }
             };
@@ -362,8 +337,7 @@ namespace Bit.App.Pages
             {
                 new SettingsPageListItem { Name = AppResources.Options },
                 new SettingsPageListItem { Name = AppResources.About },
-                new SettingsPageListItem { Name = AppResources.HelpAndFeedback },
-                new SettingsPageListItem { Name = AppResources.RateTheApp }
+                new SettingsPageListItem { Name = AppResources.HelpAndFeedback }
             };
             GroupedItems.ResetWithRange(new List<SettingsPageListGroup>
             {

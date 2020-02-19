@@ -19,84 +19,11 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="{u:I18n Unlock}" Clicked="Unlock_Clicked" />
-    </ContentPage.ToolbarItems>
 
     <ScrollView>
         <StackLayout Spacing="20">
             <StackLayout StyleClass="box">
-                <Grid StyleClass="box-row" IsVisible="{Binding PinLock}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Label
-                        Text="{u:I18n PIN}"
-                        StyleClass="box-label"
-                        Grid.Row="0"
-                        Grid.Column="0" />
-                    <controls:MonoEntry
-                        x:Name="_pin"
-                        Text="{Binding Pin}"
-                        StyleClass="box-value"
-                        Keyboard="Numeric"
-                        IsSpellCheckEnabled="False"
-                        IsTextPredictionEnabled="False"
-                        IsPassword="{Binding ShowPassword, Converter={StaticResource inverseBool}}"
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        ReturnType="Go"
-                        ReturnCommand="{Binding SubmitCommand}" />
-                    <controls:FaButton
-                        StyleClass="box-row-button, box-row-button-platform"
-                        Text="{Binding ShowPasswordIcon}"
-                        Command="{Binding TogglePasswordCommand}"
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Grid.RowSpan="2"
-                        AutomationProperties.IsInAccessibleTree="True"
-                        AutomationProperties.Name="{u:I18n ToggleVisibility}" />
-                </Grid>
-                <Grid StyleClass="box-row" IsVisible="{Binding PinLock, Converter={StaticResource inverseBool}}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Label
-                        Text="{u:I18n MasterPassword}"
-                        StyleClass="box-label"
-                        Grid.Row="0"
-                        Grid.Column="0" />
-                    <controls:MonoEntry
-                        x:Name="_masterPassword"
-                        Text="{Binding MasterPassword}"
-                        StyleClass="box-value"
-                        IsSpellCheckEnabled="False"
-                        IsTextPredictionEnabled="False"
-                        IsPassword="{Binding ShowPassword, Converter={StaticResource inverseBool}}"
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        ReturnType="Go"
-                        ReturnCommand="{Binding SubmitCommand}" />
-                    <controls:FaButton
-                        StyleClass="box-row-button, box-row-button-platform"
-                        Text="{Binding ShowPasswordIcon}"
-                        Command="{Binding TogglePasswordCommand}"
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Grid.RowSpan="2"
-                        AutomationProperties.IsInAccessibleTree="True"
-                        AutomationProperties.Name="{u:I18n ToggleVisibility}" />
-                </Grid>
+                <Button Text="{u:I18n Unlock}" Clicked="Unlock_Clicked" />
                 <Label
                     Text="{Binding LockedVerifyText}"
                     StyleClass="box-footer-label" />
@@ -106,8 +33,6 @@
                     Margin="0, 10, 0, 0" />
             </StackLayout>
             <StackLayout Padding="10, 0">
-                <Button Text="{Binding FingerprintButtonText}" Clicked="Fingerprint_Clicked"
-                        IsVisible="{Binding FingerprintLock}"></Button>
                 <Button Text="{u:I18n LogOut}" Clicked="LogOut_Clicked"></Button>
             </StackLayout>
         </StackLayout>

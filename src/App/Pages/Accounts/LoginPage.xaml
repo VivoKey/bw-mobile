@@ -21,60 +21,14 @@
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="{u:I18n Close}" Clicked="Close_Clicked" Order="Primary" Priority="-1" />
-        <ToolbarItem Text="{u:I18n LogIn}" Clicked="LogIn_Clicked" />
     </ContentPage.ToolbarItems>
 
     <ScrollView>
         <StackLayout Spacing="20">
             <StackLayout StyleClass="box">
                 <StackLayout StyleClass="box-row">
-                    <Label
-                        Text="{u:I18n EmailAddress}"
-                        StyleClass="box-label" />
-                    <Entry
-                        x:Name="_email"
-                        Text="{Binding Email}"
-                        Keyboard="Email"
-                        StyleClass="box-value" />
+                    <Button Text="{u:I18n LogIn}" Clicked="LogIn_Clicked" />
                 </StackLayout>
-                <Grid StyleClass="box-row">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Label
-                        Text="{u:I18n MasterPassword}"
-                        StyleClass="box-label"
-                        Grid.Row="0"
-                        Grid.Column="0" />
-                    <controls:MonoEntry
-                        x:Name="_masterPassword"
-                        Text="{Binding MasterPassword}"
-                        StyleClass="box-value"
-                        IsSpellCheckEnabled="False"
-                        IsTextPredictionEnabled="False"
-                        IsPassword="{Binding ShowPassword, Converter={StaticResource inverseBool}}"
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        ReturnType="Go"
-                        ReturnCommand="{Binding LogInCommand}" />
-                    <controls:FaButton
-                        StyleClass="box-row-button, box-row-button-platform"
-                        Text="{Binding ShowPasswordIcon}"
-                        Command="{Binding TogglePasswordCommand}"
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Grid.RowSpan="2"
-                        AutomationProperties.IsInAccessibleTree="True"
-                        AutomationProperties.Name="{u:I18n ToggleVisibility}" />
-                </Grid>
-            </StackLayout>
-            <StackLayout Padding="10, 0">
-                <Button Text="{u:I18n GetPasswordHint}" Clicked="Hint_Clicked"></Button>
             </StackLayout>
         </StackLayout>
     </ScrollView>

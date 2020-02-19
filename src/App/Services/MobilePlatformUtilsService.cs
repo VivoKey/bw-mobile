@@ -199,7 +199,7 @@ namespace Bit.App.Services
 
         public async Task<bool> SupportsBiometricAsync()
         {
-            return await _deviceActionService.BiometricAvailableAsync();
+            return false;
         }
 
         public async Task<bool> AuthenticateBiometricAsync(string text = null, string fallbackText = null,

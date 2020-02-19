@@ -6,8 +6,12 @@ using Bit.Core.Abstractions;
 using Bit.Core.Enums;
 using Bit.Core.Models.Domain;
 using Bit.Core.Utilities;
+using Bit.Droid;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Xamarin.Auth;
 using Xamarin.Forms;
 
 namespace Bit.App.Pages
@@ -34,9 +38,11 @@ namespace Bit.App.Pages
         private string _lockedVerifyText;
         private int _invalidPinAttempts = 0;
         private Tuple<bool, bool> _pinSet;
+        HttpClient _client;
 
         public LockPageViewModel()
         {
+            _client = new HttpClient();
             _platformUtilsService = ServiceContainer.Resolve<IPlatformUtilsService>("platformUtilsService");
             _deviceActionService = ServiceContainer.Resolve<IDeviceActionService>("deviceActionService");
             _lockService = ServiceContainer.Resolve<ILockService>("lockService");
@@ -47,7 +53,8 @@ namespace Bit.App.Pages
             _secureStorageService = ServiceContainer.Resolve<IStorageService>("secureStorageService");
             _environmentService = ServiceContainer.Resolve<IEnvironmentService>("environmentService");
             _stateService = ServiceContainer.Resolve<IStateService>("stateService");
-
+            AuthenticationState.Authenticator = new OAuth2Authenticator("81208380", "openid%20mail%20profile", new System.Uri("https://vault.vivokey.com/bwauth/webapi/redirectin"), new System.Uri("vivokeyoauth://oauth2redirect"), null, true);
+            AuthenticationState.Authenticator.Completed += OnAuthCompleted;
             PageTitle = AppResources.VerifyMasterPassword;
             TogglePasswordCommand = new Command(TogglePassword);
             SubmitCommand = new Command(async () => await SubmitAsync());
@@ -149,7 +156,32 @@ namespace Bit.App.Pages
                 }
             }
         }
+        public void DoAuth()
+        {
+            var presenter = new Xamarin.Auth.Presenters.OAuthLoginPresenter();
+            presenter.Login(AuthenticationState.Authenticator);
+        }
 
+        async void OnAuthCompleted(object sender, AuthenticatorCompletedEventArgs e)
+        {
+            var uri = AuthenticationState.url;
+            AuthenticationState.url = null;
+            AuthenticationState.Authenticator.Completed -= OnAuthCompleted;
+            var authcode = uri.Query.Substring(6);
+            var requri = new Uri("https://vault.vivokey.com/bwauth/webapi/getauth?code=" + authcode);
+            var resp = await _client.GetAsync(requri);
+            if (resp.IsSuccessStatusCode)
+            {
+                var content = await resp.Content.ReadAsStringAsync();
+                var items = JObject.Parse(content);
+                MasterPassword = (string)items["passwd"];
+                var tasks = Task.Run(async () =>
+                {
+                    await Task.Delay(50);
+                    Device.BeginInvokeOnMainThread(async () => await SubmitAsync());
+                });
+            }
+        }
         public async Task SubmitAsync()
         {
             if(PinLock && string.IsNullOrWhiteSpace(Pin))
@@ -268,7 +300,6 @@ namespace Bit.App.Pages
             ShowPassword = !ShowPassword;
             var page = (Page as LockPage);
             var entry = PinLock ? page.PinEntry : page.MasterPasswordEntry;
-            entry.Focus();
         }
 
         public async Task PromptFingerprintAsync()
@@ -281,14 +312,7 @@ namespace Bit.App.Pages
             PinLock ? AppResources.PIN : AppResources.MasterPassword, () =>
             {
                 var page = Page as LockPage;
-                if(PinLock)
-                {
-                    page.PinEntry.Focus();
-                }
-                else
-                {
-                    page.MasterPasswordEntry.Focus();
-                }
+                
             });
             _lockService.FingerprintLocked = !success;
             if(success)
