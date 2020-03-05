@@ -190,6 +190,10 @@ namespace Bit.App.Pages
                 await Navigation.PopModalAsync();
             }
         }
+        void OnImageButtonClicked(object sender, System.EventArgs e)
+        {
+            _vm.DownloadFirstAttachmentAsync();
+        }
 
         private void AdjustToolbar()
         {

@@ -200,6 +200,21 @@
                             <BoxView StyleClass="box-row-separator" IsVisible="{Binding ShowTotp}" />
                         </StackLayout>
                         <StackLayout IsVisible="{Binding IsCard}" Spacing="0" Padding="0">
+                            <StackLayout StyleClass="box-row" IsVisible="{Binding Cipher.Card}">
+                                
+                                <Label Text="Card Photo"
+                                    FontSize="12"
+                                    FontAttributes="Bold"
+                                    HorizontalOptions="Center" />
+
+                                <ImageButton
+                                    Source="{Binding CardImage.Source}"
+                                    HorizontalOptions="CenterAndExpand"
+                                    Aspect="AspectFit"
+                                    VerticalOptions="Center"
+                                    Clicked="OnImageButtonClicked"
+                                    />
+                            </StackLayout>
                             <StackLayout StyleClass="box-row"
                                          IsVisible="{Binding Cipher.Card.CardholderName, Converter={StaticResource stringHasValue}}">
                                 <Label
@@ -209,6 +224,7 @@
                                     Text="{Binding Cipher.Card.CardholderName, Mode=OneWay}"
                                     StyleClass="box-value" />
                             </StackLayout>
+                            
                             <BoxView StyleClass="box-row-separator"
                                      IsVisible="{Binding Cipher.Card.CardholderName, Converter={StaticResource stringHasValue}}"/>
                             <Grid StyleClass="box-row"

@@ -7,6 +7,7 @@ using Bit.Core.Models.View;
 using Bit.Core.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -34,6 +35,9 @@ namespace Bit.App.Pages
         private bool _totpLow;
         private DateTime? _totpInterval = null;
         private string _previousCipherId;
+        private byte[] imgData;
+        public ImageSource imgSrc;
+        public Image cardImageProper;
 
         public ViewPageViewModel()
         {
@@ -53,10 +57,13 @@ namespace Bit.App.Pages
             ToggleCardCodeCommand = new Command(ToggleCardCode);
             CheckPasswordCommand = new Command(CheckPasswordAsync);
             DownloadAttachmentCommand = new Command<AttachmentView>(DownloadAttachmentAsync);
-
+            imgSrc = ImageSource.FromFile("id.png");
+            cardImageProper = new Image
+            {
+                Source = imgSrc
+            };
             PageTitle = AppResources.ViewItem;
         }
-
         public Command CopyCommand { get; set; }
         public Command CopyUriCommand { get; set; }
         public Command CopyFieldCommand { get; set; }
@@ -65,6 +72,7 @@ namespace Bit.App.Pages
         public Command ToggleCardCodeCommand { get; set; }
         public Command CheckPasswordCommand { get; set; }
         public Command DownloadAttachmentCommand { get; set; }
+        public Command DownloadFirstAttachmentCommand { get; set; }
         public string CipherId { get; set; }
         public CipherView Cipher
         {
@@ -91,6 +99,19 @@ namespace Bit.App.Pages
             get => _fields;
             set => SetProperty(ref _fields, value);
         }
+        public Image CardImage
+        {
+            get => cardImageProper;
+        }
+        public bool FirstCardImg
+        {
+            get => Cipher.HasAttachments;
+        }
+        public ImageSource CardImg
+        {
+            get => imgSrc;
+            set => SetProperty(ref imgSrc, value);
+        }
         public bool CanAccessPremium
         {
             get => _canAccessPremium;
@@ -105,6 +126,7 @@ namespace Bit.App.Pages
                     nameof(ShowPasswordIcon)
                 });
         }
+
         public bool ShowCardCode
         {
             get => _showCardCode;
@@ -114,9 +136,67 @@ namespace Bit.App.Pages
                     nameof(ShowCardCodeIcon)
                 });
         }
+        public void DownloadFirstAttachmentAsync()
+        {
+            if(Cipher.HasAttachments)
+            {
+                DownloadAttachmentAsync(Cipher.Attachments.First());
+            } else
+            {
+                _deviceActionService.SelectFileAsync();
+            }
+            
+        }
+
+        public async Task<bool> GetCardImageAsync()
+        {
+            if (Cipher.HasAttachments)
+            {
+                AttachmentView attachment = Cipher.Attachments.First();
+                if (Xamarin.Essentials.Connectivity.NetworkAccess == Xamarin.Essentials.NetworkAccess.None)
+                {
+                    return false;
+                }
+                else
+                {
+
+                    if (attachment.FileSize >= 10485760) // 10 MB
+                    {
+                        return false;
+                    } else
+                    {
+                        imgData = await _cipherService.DownloadAndDecryptAttachmentAsync(attachment, Cipher.OrganizationId);
+                        Func<MemoryStream> stre = createStream;
+                        imgSrc = ImageSource.FromStream(stre);
+                        cardImageProper.Source = imgSrc;
+                        return true;
+                    }
+                    
+                }
+            } else
+            {
+                return false;
+            }
+            
+        }
+        private MemoryStream createStream()
+        {
+            return new MemoryStream(imgData);
+        }
         public bool IsLogin => Cipher?.Type == Core.Enums.CipherType.Login;
         public bool IsIdentity => Cipher?.Type == Core.Enums.CipherType.Identity;
-        public bool IsCard => Cipher?.Type == Core.Enums.CipherType.Card;
+        public bool IsCard
+        {
+            get
+            {
+                var crd = Cipher?.Type == Core.Enums.CipherType.Card;
+                if(crd)
+                {
+                    var crd2 = Task.Run(async () => await GetCardImageAsync()).Result;
+                }
+                return crd;
+            }
+        }
         public bool IsSecureNote => Cipher?.Type == Core.Enums.CipherType.SecureNote;
         public FormattedString ColoredPassword => PasswordFormatter.FormatPassword(Cipher.Login.Password);
         public FormattedString UpdatedText
@@ -271,6 +351,8 @@ namespace Bit.App.Pages
                     Core.Enums.EventType.Cipher_ClientToggledCardCodeVisible, CipherId);
             }
         }
+
+
 
         public async Task<bool> DeleteAsync()
         {
