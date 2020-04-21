@@ -523,6 +523,7 @@
                         </StackLayout>
                         <StackLayout StyleClass="box-row">
                             <Label
+                                TextType="Html"
                                 Text="{Binding Cipher.Notes, Mode=OneWay}"
                                 StyleClass="box-value"
                                 LineBreakMode="WordWrap">

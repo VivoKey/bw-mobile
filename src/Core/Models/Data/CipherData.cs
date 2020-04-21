@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Markdig;
 
 namespace Bit.Core.Models.Data
 {
@@ -21,7 +22,7 @@ namespace Bit.Core.Models.Data
             RevisionDate = response.RevisionDate;
             Type = response.Type;
             Name = response.Name;
-            Notes = response.Notes;
+            Notes = Markdown.ToHtml(response.Notes);
             CollectionIds = collectionIds?.ToList() ?? response.CollectionIds;
 
             switch (Type)
