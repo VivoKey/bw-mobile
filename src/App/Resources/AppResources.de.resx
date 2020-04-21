@@ -728,8 +728,8 @@
     <value>Es befinden sich keine Zugangsdaten für {0} in deinem Tresor.</value>
     <comment>This is used for the autofill service. ex. "There are no items in your vault for twitter.com".</comment>
   </data>
-  <data name="BitwardenAutofillServiceNotification" xml:space="preserve">
-    <value>Du kannst die Bitwarden Auto-Ausfüllen Benachrichtigung antippen, um deine Zugangsdaten automatisch einfügen zu lassen.</value>
+  <data name="BitwardenAutofillServiceOverlay" xml:space="preserve">
+    <value>Wenn Sie ein Eingabefeld auswählen und ein Auto-Fill-Overlay von Bitwarden sehen, können Sie darauf tippen, um den Dienst zum automatischen Ausfüllen zu starten.</value>
   </data>
   <data name="BitwardenAutofillServiceNotificationContent" xml:space="preserve">
     <value>Tippe auf diese Benachrichtigung, um automatisch Zugangsdaten aus deinem Tresor einzufügen.</value>
@@ -778,24 +778,6 @@
   </data>
   <data name="ShareVault" xml:space="preserve">
     <value>Ihren Tresor teilen</value>
-  </data>
-  <data name="AutofillPasswordField" xml:space="preserve">
-    <value>Scan bei ausgewähltem Passwortfeld durchführen</value>
-  </data>
-  <data name="AutofillPasswordFieldDescription" xml:space="preserve">
-    <value>Den Bildschirminhalt nur auf Loginfelder untersuchen und Auto-Ausfüllen Benachrichtigung zeigen, wenn ein Passwortfeld ausgewählt ist. Diese Option kann die Akkulaufzeit verlängern.</value>
-  </data>
-  <data name="AutofillPersistNotification" xml:space="preserve">
-    <value>Dauerhafte Benachrichtigung</value>
-  </data>
-  <data name="AutofillPersistNotificationDescription" xml:space="preserve">
-    <value>Die Auto-Ausfüllen Benachrichtigung immer zeigen, aber den Bildschirminhalt erst durchsuchen wenn die Benachrichtigung ausgewählt wurde. Diese Option kann die Akkulaufzeit verlängern.</value>
-  </data>
-  <data name="AutofillAlways" xml:space="preserve">
-    <value>Bildschirminhalt immer durchsuchen</value>
-  </data>
-  <data name="AutofillAlwaysDescription" xml:space="preserve">
-    <value>Den Bildschirminhalt immer auf Loginfelder untersuchen und eine Auto-Ausfüllen Benachrichtigung anbieten, wenn ein Loginfeld gefunden wurde. Das ist die Standardeinstellung.</value>
   </data>
   <data name="CannotOpenApp" xml:space="preserve">
     <value>Die App "{0}" kann nicht geöffnet werden.</value>
@@ -1382,7 +1364,7 @@
     <value>Besitz</value>
   </data>
   <data name="WhoOwnsThisItem" xml:space="preserve">
-    <value>Wer besitzt diesen Eintrag?</value>
+    <value>Wem gehört dieser Eintrag?</value>
   </data>
   <data name="NoCollectionsToList" xml:space="preserve">
     <value>Keine Sammlungen vorhanden.</value>
@@ -1391,7 +1373,7 @@
     <value>Eintrag wurde geteilt.</value>
   </data>
   <data name="SelectOneCollection" xml:space="preserve">
-    <value>Sie müssen mindestens eine Sammlung auswählen.</value>
+    <value>Es muss mindestens eine Sammlung ausgewählt sein.</value>
   </data>
   <data name="Share" xml:space="preserve">
     <value>Teilen</value>
@@ -1412,7 +1394,7 @@
     <value>Passphrase</value>
   </data>
   <data name="WordSeparator" xml:space="preserve">
-    <value>Worttrennzeichen</value>
+    <value>Trennzeichen</value>
   </data>
   <data name="Clear" xml:space="preserve">
     <value>Leeren</value>
@@ -1426,15 +1408,15 @@
     <value>Keine Ordner zum Auflisten vorhanden.</value>
   </data>
   <data name="FingerprintPhrase" xml:space="preserve">
-    <value>Fingerabdruck-Phrase</value>
+    <value>Prüfschlüssel</value>
     <comment>A 'fingerprint phrase' is a unique word phrase (similar to a passphrase) that a user can use to authenticate their public key with another user, for the purposes of sharing.</comment>
   </data>
   <data name="YourAccountsFingerprint" xml:space="preserve">
-    <value>Fingerabdruck-Phrase ihres Kontos</value>
+    <value>Prüfschlüssel für deinen Account</value>
     <comment>A 'fingerprint phrase' is a unique word phrase (similar to a passphrase) that a user can use to authenticate their public key with another user, for the purposes of sharing.</comment>
   </data>
   <data name="ShareVaultConfirmation" xml:space="preserve">
-    <value>Bitwarden erlaubt es Ihnen, Ihren Tresor mit anderen zu teilen, indem Sie ein Organisationskonto verwenden. Möchten Sie die bitwarden.com Website besuchen, um mehr zu erfahren?</value>
+    <value>Bitwarden ermöglicht es dir, deinen Tresor mit anderen zu teilen, indem du ein Organisationskonto benutzt. Möchtest du bitwarden.com besuchen, um mehr zu erfahren?</value>
   </data>
   <data name="ExportVault" xml:space="preserve">
     <value>Tresor exportieren</value>
@@ -1586,5 +1568,61 @@
   </data>
   <data name="UseBiometricsToUnlock" xml:space="preserve">
     <value>Biometrische Daten zum entsperren verwenden</value>
+  </data>
+  <data name="AccessibilityOverlayPermissionAlert" xml:space="preserve">
+    <value>Bitwarden braucht Aufmerksamkeit - Siehe "Auto-Fill-Bedienungshilfe" in den Bitwarden-Einstellungen</value>
+  </data>
+  <data name="BitwardenAutofillServiceOverlayPermission" xml:space="preserve">
+    <value>3. Gehen Sie unter Android in den App-Einstellungen für Bitwarden zur Option "Über anderen Apps einblenden" (unter Erweitert) und tippen Sie auf den Schalter, um die Overlay-Unterstützung zu aktivieren.</value>
+  </data>
+  <data name="OverlayPermission" xml:space="preserve">
+    <value>Berechtigung</value>
+  </data>
+  <data name="BitwardenAutofillServiceOpenOverlayPermissionSettings" xml:space="preserve">
+    <value>Overlay-Berechtigungseinstellungen öffnen</value>
+  </data>
+  <data name="BitwardenAutofillServiceStep3" xml:space="preserve">
+    <value>3. Wählen Sie unter Android in den App-Einstellungen für Bitwarden "Über anderen Apps einblenden" (unter "Erweitert") und aktivieren Sie den Schalter, um das Overlay zu erlauben.</value>
+  </data>
+  <data name="Denied" xml:space="preserve">
+    <value>Abgelehnt</value>
+  </data>
+  <data name="Granted" xml:space="preserve">
+    <value>Gewährt</value>
+  </data>
+  <data name="FileFormat" xml:space="preserve">
+    <value>Dateiformat</value>
+  </data>
+  <data name="ExportVaultMasterPasswordDescription" xml:space="preserve">
+    <value>Geben Sie das Master-Passwort ein, um Ihre Tresordaten zu exportieren.</value>
+  </data>
+  <data name="ExportVaultWarning" xml:space="preserve">
+    <value>Dieser Export enthält Ihre Tresor-Daten in einem unverschlüsseltem Format. Sie sollten die Datei daher nicht über unsichere Kanäle (z.B. E-Mail) versenden oder speichern. Löschen Sie die Datei sofort nach ihrer Verwendung.</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Achtung</value>
+  </data>
+  <data name="ExportVaultFailure" xml:space="preserve">
+    <value>Beim Exportieren Ihres Tresors ist ein Problem aufgetreten. Wenn das Problem weiterhin besteht, müssen Sie aus dem Web-Tresor exportieren.</value>
+  </data>
+  <data name="ExportVaultSuccess" xml:space="preserve">
+    <value>Tresor erfolgreich exportiert</value>
+  </data>
+  <data name="Clone" xml:space="preserve">
+    <value>Duplizieren</value>
+    <comment>Clone an entity (verb).</comment>
+  </data>
+  <data name="PasswordGeneratorPolicyInEffect" xml:space="preserve">
+    <value>Eine oder mehrere Organisationsrichtlinien beeinflussen Ihre Generator-Einstellungen</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Öffnen</value>
+    <comment>Button text for an open operation (verb).</comment>
+  </data>
+  <data name="UnableToSaveAttachment" xml:space="preserve">
+    <value>Beim Speichern dieses Anhangs ist ein Problem aufgetreten. Wenn das Problem weiterhin besteht, können Sie ihn aus dem Web-Tresor speichern.</value>
+  </data>
+  <data name="SaveAttachmentSuccess" xml:space="preserve">
+    <value>Anhang erfolgreich gespeichert</value>
   </data>
 </root>

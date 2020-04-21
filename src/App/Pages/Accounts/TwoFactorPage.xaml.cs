@@ -1,4 +1,6 @@
 ﻿using Bit.App.Controls;
+using Bit.App.Models;
+using Bit.Core;
 using Bit.Core.Abstractions;
 using Bit.Core.Utilities;
 using System;
@@ -11,20 +13,25 @@ namespace Bit.App.Pages
     {
         private readonly IBroadcasterService _broadcasterService;
         private readonly IMessagingService _messagingService;
+        private readonly IStorageService _storageService;
+        private readonly AppOptions _appOptions;
 
         private TwoFactorPageViewModel _vm;
         private bool _inited;
 
-        public TwoFactorPage()
+        public TwoFactorPage(AppOptions appOptions = null)
         {
             InitializeComponent();
             SetActivityIndicator();
+            _appOptions = appOptions;
+            _storageService = ServiceContainer.Resolve<IStorageService>("storageService");
             _broadcasterService = ServiceContainer.Resolve<IBroadcasterService>("broadcasterService");
             _messagingService = ServiceContainer.Resolve<IMessagingService>("messagingService");
             _vm = BindingContext as TwoFactorPageViewModel;
             _vm.Page = this;
+            _vm.TwoFactorAction = () => Device.BeginInvokeOnMainThread(async () => await TwoFactorAuthAsync());
             DuoWebView = _duoWebView;
-            if(Device.RuntimePlatform == Device.Android)
+            if (Device.RuntimePlatform == Device.Android)
             {
                 ToolbarItems.Remove(_cancelItem);
             }
@@ -34,7 +41,7 @@ namespace Bit.App.Pages
 
         public void AddContinueButton()
         {
-            if(!ToolbarItems.Contains(_continueItem))
+            if (!ToolbarItems.Contains(_continueItem))
             {
                 ToolbarItems.Add(_continueItem);
             }
@@ -42,7 +49,7 @@ namespace Bit.App.Pages
 
         public void RemoveContinueButton()
         {
-            if(ToolbarItems.Contains(_continueItem))
+            if (ToolbarItems.Contains(_continueItem))
             {
                 ToolbarItems.Remove(_continueItem);
             }
@@ -53,10 +60,10 @@ namespace Bit.App.Pages
             base.OnAppearing();
             _broadcasterService.Subscribe(nameof(TwoFactorPage), (message) =>
             {
-                if(message.Command == "gotYubiKeyOTP")
+                if (message.Command == "gotYubiKeyOTP")
                 {
                     var token = (string)message.Data;
-                    if(_vm.YubikeyMethod && !string.IsNullOrWhiteSpace(token) &&
+                    if (_vm.YubikeyMethod && !string.IsNullOrWhiteSpace(token) &&
                         token.Length == 44 && !token.Contains(" "))
                     {
                         Device.BeginInvokeOnMainThread(async () =>
@@ -66,22 +73,22 @@ namespace Bit.App.Pages
                         });
                     }
                 }
-                else if(message.Command == "resumeYubiKey")
+                else if (message.Command == "resumeYubiKey")
                 {
-                    if(_vm.YubikeyMethod)
+                    if (_vm.YubikeyMethod)
                     {
                         _messagingService.Send("listenYubiKeyOTP", true);
                     }
                 }
             });
 
-            if(!_inited)
+            if (!_inited)
             {
                 _inited = true;
                 await LoadOnAppearedAsync(_scrollView, true, () =>
                 {
                     _vm.Init();
-                    if(_vm.TotpMethod)
+                    if (_vm.TotpMethod)
                     {
                         RequestFocus(_totpEntry);
                     }
@@ -93,7 +100,7 @@ namespace Bit.App.Pages
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            if(!_vm.YubikeyMethod)
+            if (!_vm.YubikeyMethod)
             {
                 _messagingService.Send("listenYubiKeyOTP", false);
                 _broadcasterService.Unsubscribe(nameof(TwoFactorPage));
@@ -101,7 +108,7 @@ namespace Bit.App.Pages
         }
         protected override bool OnBackButtonPressed()
         {
-            if(_vm.YubikeyMethod)
+            if (_vm.YubikeyMethod)
             {
                 _messagingService.Send("listenYubiKeyOTP", false);
                 _broadcasterService.Unsubscribe(nameof(TwoFactorPage));
@@ -111,7 +118,7 @@ namespace Bit.App.Pages
 
         private async void Continue_Clicked(object sender, EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
                 await _vm.SubmitAsync();
             }
@@ -119,7 +126,7 @@ namespace Bit.App.Pages
 
         private async void Methods_Clicked(object sender, EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
                 await _vm.AnotherMethodAsync();
             }
@@ -127,7 +134,7 @@ namespace Bit.App.Pages
 
         private async void ResendEmail_Clicked(object sender, EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
                 await _vm.SendEmailAsync(true, true);
             }
@@ -135,7 +142,7 @@ namespace Bit.App.Pages
 
         private async void Close_Clicked(object sender, System.EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
                 await Navigation.PopModalAsync();
             }
@@ -143,13 +150,36 @@ namespace Bit.App.Pages
 
         private void TryAgain_Clicked(object sender, EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
-                if(_vm.YubikeyMethod)
+                if (_vm.YubikeyMethod)
                 {
                     _messagingService.Send("listenYubiKeyOTP", true);
                 }
             }
+        }
+        
+        private async Task TwoFactorAuthAsync()
+        {
+            if (_appOptions != null)
+            {
+                if (_appOptions.FromAutofillFramework && _appOptions.SaveType.HasValue)
+                {
+                    Application.Current.MainPage = new NavigationPage(new AddEditPage(appOptions: _appOptions));
+                    return;
+                }
+                if (_appOptions.Uri != null)
+                {
+                    Application.Current.MainPage = new NavigationPage(new AutofillCiphersPage(_appOptions));
+                    return;
+                }
+            }
+            var previousPage = await _storageService.GetAsync<PreviousPageInfo>(Constants.PreviousPageKey);
+            if (previousPage != null)
+            {
+                await _storageService.RemoveAsync(Constants.PreviousPageKey);
+            }
+            Application.Current.MainPage = new TabsPage(_appOptions, previousPage);
         }
     }
 }

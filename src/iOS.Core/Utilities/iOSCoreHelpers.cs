@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Bit.App.Abstractions;
 using Bit.App.Services;
@@ -8,7 +9,6 @@ using Bit.Core.Services;
 using Bit.Core.Utilities;
 using Bit.iOS.Core.Services;
 using Foundation;
-using HockeyApp.iOS;
 using UIKit;
 
 namespace Bit.iOS.Core.Utilities
@@ -21,17 +21,17 @@ namespace Bit.iOS.Core.Utilities
         public static string AppGroupId = "group.com.8bit.bitwarden";
         public static string AccessGroup = "LTZ2PFU5D6.com.8bit.bitwarden";
 
-        public static void RegisterHockeyApp()
+        public static void RegisterAppCenter()
         {
-            var crashManagerDelegate = new HockeyAppCrashManagerDelegate(
+            var appCenterHelper = new AppCenterHelper(
                 ServiceContainer.Resolve<IAppIdService>("appIdService"),
                 ServiceContainer.Resolve<IUserService>("userService"));
-            var task = crashManagerDelegate.InitAsync();
+            var appCenterTask = appCenterHelper.InitAsync();
         }
 
         public static void RegisterLocalServices()
         {
-            if(ServiceContainer.Resolve<ILogService>("logService", true) == null)
+            if (ServiceContainer.Resolve<ILogService>("logService", true) == null)
             {
                 ServiceContainer.Register<ILogService>("logService", new ConsoleLogService());
             }
@@ -64,12 +64,12 @@ namespace Bit.iOS.Core.Utilities
             ServiceContainer.Register<IPlatformUtilsService>("platformUtilsService", platformUtilsService);
         }
 
-        public static void Bootstrap()
+        public static void Bootstrap(Func<Task> postBootstrapFunc = null)
         {
             (ServiceContainer.Resolve<II18nService>("i18nService") as MobileI18nService).Init();
             ServiceContainer.Resolve<IAuthService>("authService").Init();
             // Note: This is not awaited
-            var bootstrapTask = BootstrapAsync();
+            var bootstrapTask = BootstrapAsync(postBootstrapFunc);
         }
 
         public static void AppearanceAdjustments(IDeviceActionService deviceActionService)
@@ -79,13 +79,17 @@ namespace Bit.iOS.Core.Utilities
             UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.LightContent;
         }
 
-        private static async Task BootstrapAsync()
+        private static async Task BootstrapAsync(Func<Task> postBootstrapFunc = null)
         {
             var disableFavicon = await ServiceContainer.Resolve<IStorageService>("storageService").GetAsync<bool?>(
                 Bit.Core.Constants.DisableFaviconKey);
             await ServiceContainer.Resolve<IStateService>("stateService").SaveAsync(
                 Bit.Core.Constants.DisableFaviconKey, disableFavicon);
             await ServiceContainer.Resolve<IEnvironmentService>("environmentService").SetUrlsFromStorageAsync();
+            if (postBootstrapFunc != null)
+            {
+                await postBootstrapFunc.Invoke();
+            }
         }
     }
 }

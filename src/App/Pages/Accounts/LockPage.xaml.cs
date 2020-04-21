@@ -35,10 +35,10 @@ namespace Bit.App.Pages
 
         public async Task PromptFingerprintAfterResumeAsync()
         {
-            if(_vm.FingerprintLock)
+            if (_vm.FingerprintLock)
             {
                 await Task.Delay(500);
-                if(!_promptedAfterResume)
+                if (!_promptedAfterResume)
                 {
                     _promptedAfterResume = true;
                     await _vm?.PromptFingerprintAsync();
@@ -49,18 +49,17 @@ namespace Bit.App.Pages
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            if(_appeared)
+            if (_appeared)
             {
                 return;
             }
             _appeared = true;
             await _vm.InitAsync(_autoPromptFingerprint);
-            
         }
 
         private void Unlock_Clicked(object sender, EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
                 _vm.DoAuth();
             }
@@ -68,7 +67,7 @@ namespace Bit.App.Pages
 
         private async void LogOut_Clicked(object sender, EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
                 await _vm.LogOutAsync();
             }
@@ -76,7 +75,7 @@ namespace Bit.App.Pages
 
         private async void Fingerprint_Clicked(object sender, EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
                 await _vm.PromptFingerprintAsync();
             }
@@ -84,21 +83,21 @@ namespace Bit.App.Pages
 
         private async Task UnlockedAsync()
         {
-            if(_appOptions != null)
+            if (_appOptions != null)
             {
-                if(_appOptions.FromAutofillFramework && _appOptions.SaveType.HasValue)
+                if (_appOptions.FromAutofillFramework && _appOptions.SaveType.HasValue)
                 {
                     Application.Current.MainPage = new NavigationPage(new AddEditPage(appOptions: _appOptions));
                     return;
                 }
-                else if(_appOptions.Uri != null)
+                if (_appOptions.Uri != null)
                 {
                     Application.Current.MainPage = new NavigationPage(new AutofillCiphersPage(_appOptions));
                     return;
                 }
             }
             var previousPage = await _storageService.GetAsync<PreviousPageInfo>(Constants.PreviousPageKey);
-            if(previousPage != null)
+            if (previousPage != null)
             {
                 await _storageService.RemoveAsync(Constants.PreviousPageKey);
             }

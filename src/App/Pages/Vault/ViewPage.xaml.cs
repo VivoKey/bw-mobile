@@ -1,4 +1,5 @@
-﻿using Bit.App.Resources;
+﻿using System;
+using Bit.App.Resources;
 using Bit.Core.Abstractions;
 using Bit.Core.Utilities;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace Bit.App.Pages
             _vm.CipherId = cipherId;
             SetActivityIndicator(_mainContent);
 
-            if(Device.RuntimePlatform == Device.iOS)
+            if (Device.RuntimePlatform == Device.iOS)
             {
                 _absLayout.Children.Remove(_fab);
                 ToolbarItems.Add(_closeItem);
@@ -32,7 +33,6 @@ namespace Bit.App.Pages
             }
             else
             {
-                _fab.Clicked = EditButton_Clicked;
                 _mainLayout.Padding = new Thickness(0, 0, 0, 75);
                 ToolbarItems.Add(_attachmentsItem);
                 ToolbarItems.Add(_deleteItem);
@@ -41,41 +41,58 @@ namespace Bit.App.Pages
 
         public ViewPageViewModel ViewModel => _vm;
 
+        public void UpdateCipherId(string cipherId)
+        {
+            _vm.CipherId = cipherId;
+        }
+
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            if(_syncService.SyncInProgress)
+            if (_syncService.SyncInProgress)
             {
                 IsBusy = true;
             }
 
             _broadcasterService.Subscribe(nameof(ViewPage), async (message) =>
             {
-                if(message.Command == "syncStarted")
+                if (message.Command == "syncStarted")
                 {
                     Device.BeginInvokeOnMainThread(() => IsBusy = true);
                 }
-                else if(message.Command == "syncCompleted")
+                else if (message.Command == "syncCompleted")
                 {
                     await Task.Delay(500);
                     Device.BeginInvokeOnMainThread(() =>
                     {
                         IsBusy = false;
-                        if(message.Data is Dictionary<string, object> data && data.ContainsKey("successfully"))
+                        if (message.Data is Dictionary<string, object> data && data.ContainsKey("successfully"))
                         {
                             var success = data["successfully"] as bool?;
-                            if(success.GetValueOrDefault())
+                            if (success.GetValueOrDefault())
                             {
                                 var task = _vm.LoadAsync(() => AdjustToolbar());
                             }
                         }
                     });
                 }
+                else if (message.Command == "selectSaveFileResult")
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        var data = message.Data as Tuple<string, string>;
+                        if (data == null)
+                        {
+                            return;
+                        }
+                        _vm.SaveFileSelected(data.Item1, data.Item2);
+                    });
+                }
             });
             await LoadOnAppearedAsync(_scrollView, true, async () =>
             {
                 var success = await _vm.LoadAsync(() => AdjustToolbar());
-                if(!success)
+                if (!success)
                 {
                     await Navigation.PopModalAsync();
                 }
@@ -92,7 +109,7 @@ namespace Bit.App.Pages
 
         private async void PasswordHistory_Tapped(object sender, System.EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
                 await Navigation.PushModalAsync(new NavigationPage(new PasswordHistoryPage(_vm.CipherId)));
             }
@@ -100,7 +117,7 @@ namespace Bit.App.Pages
 
         private async void EditToolbarItem_Clicked(object sender, System.EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
                 await Navigation.PushModalAsync(new NavigationPage(new AddEditPage(_vm.CipherId)));
             }
@@ -113,7 +130,7 @@ namespace Bit.App.Pages
 
         private async void Attachments_Clicked(object sender, System.EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
                 var page = new AttachmentsPage(_vm.CipherId);
                 await Navigation.PushModalAsync(new NavigationPage(page));
@@ -122,7 +139,7 @@ namespace Bit.App.Pages
 
         private async void Share_Clicked(object sender, System.EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
                 var page = new SharePage(_vm.CipherId);
                 await Navigation.PushModalAsync(new NavigationPage(page));
@@ -131,9 +148,9 @@ namespace Bit.App.Pages
 
         private async void Delete_Clicked(object sender, System.EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
-                if(await _vm.DeleteAsync())
+                if (await _vm.DeleteAsync())
                 {
                     await Navigation.PopModalAsync();
                 }
@@ -142,50 +159,74 @@ namespace Bit.App.Pages
 
         private async void Collections_Clicked(object sender, System.EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
                 var page = new CollectionsPage(_vm.CipherId);
+                await Navigation.PushModalAsync(new NavigationPage(page));
+            }
+        }
+
+        private async void Clone_Clicked(object sender, System.EventArgs e)
+        {
+            if (DoOnce())
+            {
+                var page = new AddEditPage(_vm.CipherId, cloneMode: true, viewPage: this);
                 await Navigation.PushModalAsync(new NavigationPage(page));
             }
         }
 
         private async void More_Clicked(object sender, System.EventArgs e)
         {
-            if(!DoOnce())
+            if (!DoOnce())
             {
                 return;
             }
-            var options = new List<string> { AppResources.Attachments };
-            options.Add(_vm.Cipher.OrganizationId == null ? AppResources.Share : AppResources.Collections);
+
+            var options = new List<string> {AppResources.Attachments};
+            if (_vm.Cipher.OrganizationId == null)
+            {
+                options.Add(AppResources.Clone);
+                options.Add(AppResources.Share);
+            }
+            else
+            {
+                options.Add(AppResources.Collections);
+            }
+
             var selection = await DisplayActionSheet(AppResources.Options, AppResources.Cancel,
                 AppResources.Delete, options.ToArray());
-            if(selection == AppResources.Delete)
+            if (selection == AppResources.Delete)
             {
-                if(await _vm.DeleteAsync())
+                if (await _vm.DeleteAsync())
                 {
                     await Navigation.PopModalAsync();
                 }
             }
-            else if(selection == AppResources.Attachments)
+            else if (selection == AppResources.Attachments)
             {
                 var page = new AttachmentsPage(_vm.CipherId);
                 await Navigation.PushModalAsync(new NavigationPage(page));
             }
-            else if(selection == AppResources.Collections)
+            else if (selection == AppResources.Collections)
             {
                 var page = new CollectionsPage(_vm.CipherId);
                 await Navigation.PushModalAsync(new NavigationPage(page));
             }
-            else if(selection == AppResources.Share)
+            else if (selection == AppResources.Share)
             {
                 var page = new SharePage(_vm.CipherId);
+                await Navigation.PushModalAsync(new NavigationPage(page));
+            }
+            else if (selection == AppResources.Clone)
+            {
+                var page = new AddEditPage(_vm.CipherId, cloneMode: true, viewPage: this);
                 await Navigation.PushModalAsync(new NavigationPage(page));
             }
         }
 
         private async void Close_Clicked(object sender, System.EventArgs e)
         {
-            if(DoOnce())
+            if (DoOnce())
             {
                 await Navigation.PopModalAsync();
             }
@@ -197,28 +238,36 @@ namespace Bit.App.Pages
 
         private void AdjustToolbar()
         {
-            if(Device.RuntimePlatform != Device.Android || _vm.Cipher == null)
+            if (Device.RuntimePlatform != Device.Android || _vm.Cipher == null)
             {
                 return;
             }
-            if(_vm.Cipher.OrganizationId == null)
+            if (_vm.Cipher.OrganizationId == null)
             {
-                if(ToolbarItems.Contains(_collectionsItem))
+                if (ToolbarItems.Contains(_collectionsItem))
                 {
                     ToolbarItems.Remove(_collectionsItem);
                 }
-                if(!ToolbarItems.Contains(_shareItem))
+                if (!ToolbarItems.Contains(_cloneItem))
                 {
-                    ToolbarItems.Insert(1, _shareItem);
+                    ToolbarItems.Insert(1, _cloneItem);
+                }
+                if (!ToolbarItems.Contains(_shareItem))
+                {
+                    ToolbarItems.Insert(2, _shareItem);
                 }
             }
             else
             {
-                if(ToolbarItems.Contains(_shareItem))
+                if (ToolbarItems.Contains(_cloneItem))
+                {
+                    ToolbarItems.Remove(_cloneItem);
+                }
+                if (ToolbarItems.Contains(_shareItem))
                 {
                     ToolbarItems.Remove(_shareItem);
                 }
-                if(!ToolbarItems.Contains(_collectionsItem))
+                if (!ToolbarItems.Contains(_collectionsItem))
                 {
                     ToolbarItems.Insert(1, _collectionsItem);
                 }

@@ -728,8 +728,8 @@
     <value>Žádné položky pro {0}.</value>
     <comment>This is used for the autofill service. ex. "There are no items in your vault for twitter.com".</comment>
   </data>
-  <data name="BitwardenAutofillServiceNotification" xml:space="preserve">
-    <value>Pokud uvidíte v liště oznámení z aplikace Bitwarden, můžete klepnutím na něj spustit automatické vyplnění přihlašovacích údajů.</value>
+  <data name="BitwardenAutofillServiceOverlay" xml:space="preserve">
+    <value>Když vyberete vstupní pole a uvidíte překrytí Bitwarden automatického vyplnění, můžete na něj klepnout a spustit službu automatického vyplnění.</value>
   </data>
   <data name="BitwardenAutofillServiceNotificationContent" xml:space="preserve">
     <value>Klikněte pro automatické vyplnění přihlašovacích údajů.</value>
@@ -778,24 +778,6 @@
   </data>
   <data name="ShareVault" xml:space="preserve">
     <value>Sdílet trezor</value>
-  </data>
-  <data name="AutofillPasswordField" xml:space="preserve">
-    <value>Prohledávat jen při vybrání pole hesla</value>
-  </data>
-  <data name="AutofillPasswordFieldDescription" xml:space="preserve">
-    <value>Prohledávat pole obrazovky pouze při výběru pole s heslem a zobrazit oznámení automatického vyplnění údajů. Toto nastavení může pomoci prodloužit výdrž baterie.</value>
-  </data>
-  <data name="AutofillPersistNotification" xml:space="preserve">
-    <value>Vždy zobrazovat oznámení</value>
-  </data>
-  <data name="AutofillPersistNotificationDescription" xml:space="preserve">
-    <value>Vždy zobrazovat oznámení automatického vyplnění a pouze po kliknutí na něj prohledávat pole obrazovky. Toto nastavení může pomoci prodloužit výdrž baterie.</value>
-  </data>
-  <data name="AutofillAlways" xml:space="preserve">
-    <value>Vždy prohledávat</value>
-  </data>
-  <data name="AutofillAlwaysDescription" xml:space="preserve">
-    <value>Vždy prohledávat pole obrazovky a pouze v případě nalezení pole s heslem zobrazit oznámení automatického vyplnění. Toto je výchozí nastavení.</value>
   </data>
   <data name="CannotOpenApp" xml:space="preserve">
     <value>Aplikaci „{0}“ nelze otevřít.</value>
@@ -1586,5 +1568,61 @@
   </data>
   <data name="UseBiometricsToUnlock" xml:space="preserve">
     <value>Použít biometrii k odemknutí</value>
+  </data>
+  <data name="AccessibilityOverlayPermissionAlert" xml:space="preserve">
+    <value>Bitwarden vyžaduje pozornost – Zkontrolujte „službu přístupnosti“ v Bitwarden nastavení </value>
+  </data>
+  <data name="BitwardenAutofillServiceOverlayPermission" xml:space="preserve">
+    <value>3. Na obrazovce Android nastavení aplikace Bitwarden přejděte v části Rozšířená nastavení do „Zobrazit přes ostatní aplikace“  a povolte zobrazení přes jiné aplikace.</value>
+  </data>
+  <data name="OverlayPermission" xml:space="preserve">
+    <value>Oprávnění</value>
+  </data>
+  <data name="BitwardenAutofillServiceOpenOverlayPermissionSettings" xml:space="preserve">
+    <value>Otevřít nastavení oprávnění překrytí obrazovky</value>
+  </data>
+  <data name="BitwardenAutofillServiceStep3" xml:space="preserve">
+    <value>3. Na obrazovce Android nastavení aplikace Bitwarden přejděte v části Rozšířená nastavení do „Zobrazit přes ostatní aplikace“  a povolte zobrazení přes jiné aplikace.</value>
+  </data>
+  <data name="Denied" xml:space="preserve">
+    <value>Zamítnuto</value>
+  </data>
+  <data name="Granted" xml:space="preserve">
+    <value>Uděleno</value>
+  </data>
+  <data name="FileFormat" xml:space="preserve">
+    <value>Formát souboru</value>
+  </data>
+  <data name="ExportVaultMasterPasswordDescription" xml:space="preserve">
+    <value>Zadejte své hlavní heslo pro export dat.</value>
+  </data>
+  <data name="ExportVaultWarning" xml:space="preserve">
+    <value>Tento export obsahuje data vašeho trezoru v nezašifrovaném formátu. Soubor exportu byste neměli ukládat ani odesílat přes nezabezpečené kanály (např. e-mailem). Odstraňte jej okamžitě po jeho použití.</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Upozornění</value>
+  </data>
+  <data name="ExportVaultFailure" xml:space="preserve">
+    <value>Při exportu vašeho trezoru došlo k chybě. Pokud problém přetrvává, proveďte export z webového trezoru.</value>
+  </data>
+  <data name="ExportVaultSuccess" xml:space="preserve">
+    <value>Trezor byl úspěšně exportován</value>
+  </data>
+  <data name="Clone" xml:space="preserve">
+    <value>Duplikovat</value>
+    <comment>Clone an entity (verb).</comment>
+  </data>
+  <data name="PasswordGeneratorPolicyInEffect" xml:space="preserve">
+    <value>Jedna nebo více zásad organizace ovlivňují nastavení generátoru.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Otevřít</value>
+    <comment>Button text for an open operation (verb).</comment>
+  </data>
+  <data name="UnableToSaveAttachment" xml:space="preserve">
+    <value>Při ukládání této přílohy došlo k chybě. Pokud problém přetrvává, můžete ji uložit z webového trezoru.</value>
+  </data>
+  <data name="SaveAttachmentSuccess" xml:space="preserve">
+    <value>Příloha byla úspěšně uložena</value>
   </data>
 </root>

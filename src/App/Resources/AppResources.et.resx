@@ -510,7 +510,7 @@
     <value>Kiire viis oma konto- ja muude andmete importimiseks teistest paroolihalduritest.</value>
   </data>
   <data name="LastSync" xml:space="preserve">
-    <value>Viimane sünkronisatsioon:</value>
+    <value>Viimane sünkroniseerimine:</value>
   </data>
   <data name="Length" xml:space="preserve">
     <value>Pikkus</value>
@@ -728,8 +728,8 @@
     <value>Hoidlas puuduvad {0} kontod.</value>
     <comment>This is used for the autofill service. ex. "There are no items in your vault for twitter.com".</comment>
   </data>
-  <data name="BitwardenAutofillServiceNotification" xml:space="preserve">
-    <value>Kui näed Bitwardeni automaatse täitmise märguannet, saad sellele vajutada ja oma kontoandmed automaatselt sisestada.</value>
+  <data name="BitwardenAutofillServiceOverlay" xml:space="preserve">
+    <value>Kui vajutad sisendväljale ning näed Bitwardeni akent, saad sellele vajutada ning kontoandmeid ja paroole sisestada.</value>
   </data>
   <data name="BitwardenAutofillServiceNotificationContent" xml:space="preserve">
     <value>Vajuta andmete automaatseks sisestamiseks.</value>
@@ -778,24 +778,6 @@
   </data>
   <data name="ShareVault" xml:space="preserve">
     <value>Jaga oma hoidlat</value>
-  </data>
-  <data name="AutofillPasswordField" xml:space="preserve">
-    <value>Paroolivälja valimisel</value>
-  </data>
-  <data name="AutofillPasswordFieldDescription" xml:space="preserve">
-    <value>Otsi ekraanilt täitmiseks mõeldud välju ning näita automaattäite teavitust ainult siis, kui valitud on parooli väli. See valik võib aidata akut säästa.</value>
-  </data>
-  <data name="AutofillPersistNotification" xml:space="preserve">
-    <value>Püsiv märguanne</value>
-  </data>
-  <data name="AutofillPersistNotificationDescription" xml:space="preserve">
-    <value>Paku alati automaattäite märguannet ning kontrolli välju alles pärast automaatse täitmise valiku kasutamist. See valik võib aidata akut säästa.</value>
-  </data>
-  <data name="AutofillAlways" xml:space="preserve">
-    <value>Otsi alati</value>
-  </data>
-  <data name="AutofillAlwaysDescription" xml:space="preserve">
-    <value>Otsi ekraanilt sisselogimise välju ning näita automaattäite teavitust paroolivälja leidmisel. See on vaikeseade.</value>
   </data>
   <data name="CannotOpenApp" xml:space="preserve">
     <value>Rakendust "{0}" ei ole võimalik avada.</value>
@@ -1582,9 +1564,65 @@
     <value>Kinnita läbi biomeetria.</value>
   </data>
   <data name="Biometrics" xml:space="preserve">
-    <value>Biomeetria</value>
+    <value>biomeetriaga</value>
   </data>
   <data name="UseBiometricsToUnlock" xml:space="preserve">
     <value>Kasuta lahtilukustamiseks biomeetriat</value>
+  </data>
+  <data name="AccessibilityOverlayPermissionAlert" xml:space="preserve">
+    <value>Bitwarden vajab tähelepanu! Vaata Seaded - Juurdepääsetavuse teenuse seaded.</value>
+  </data>
+  <data name="BitwardenAutofillServiceOverlayPermission" xml:space="preserve">
+    <value>3. Ava Androidi rakenduste seaded. Leia üles Bitwarden, liigu sektsiooni "Täpsemalt" ning vajuta "Kuva peal" valikule ning lülita see sisse.</value>
+  </data>
+  <data name="OverlayPermission" xml:space="preserve">
+    <value>Õigus</value>
+  </data>
+  <data name="BitwardenAutofillServiceOpenOverlayPermissionSettings" xml:space="preserve">
+    <value>Ava Kuva peal seaded</value>
+  </data>
+  <data name="BitwardenAutofillServiceStep3" xml:space="preserve">
+    <value>3. Ava Androidi rakenduste seaded. Leia üles Bitwarden, liigu sektsiooni "Täpsemalt" ning vajuta "Kuva peal" valikule ning lülita see sisse.</value>
+  </data>
+  <data name="Denied" xml:space="preserve">
+    <value>Keelatud</value>
+  </data>
+  <data name="Granted" xml:space="preserve">
+    <value>Lubatud</value>
+  </data>
+  <data name="FileFormat" xml:space="preserve">
+    <value>Failivorming</value>
+  </data>
+  <data name="ExportVaultMasterPasswordDescription" xml:space="preserve">
+    <value>Hoidlas olevate andmete eksportimiseks on vajalik ülemparooli sisestamine.</value>
+  </data>
+  <data name="ExportVaultWarning" xml:space="preserve">
+    <value>Eksporditav fail sisaldab hoidla sisu, mis on krüpteeringuta. Seda faili ei tohiks kaua käidelda ning mitte mingil juhul ebaturvaliselt saata (näiteks e-postiga). Kustuta see koheselt pärast kasutamist.</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Hoiatus</value>
+  </data>
+  <data name="ExportVaultFailure" xml:space="preserve">
+    <value>Hoidla eksportimisel ilmnes tõrge. Probleemi jätkumisel teosta eksportimine veebihoidla kaudu.</value>
+  </data>
+  <data name="ExportVaultSuccess" xml:space="preserve">
+    <value>Hoidla on edukalt eksporditud</value>
+  </data>
+  <data name="Clone" xml:space="preserve">
+    <value>Klooni</value>
+    <comment>Clone an entity (verb).</comment>
+  </data>
+  <data name="PasswordGeneratorPolicyInEffect" xml:space="preserve">
+    <value>Organisatsiooni seaded mõjutavad parooli genereerija sätteid</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Ava</value>
+    <comment>Button text for an open operation (verb).</comment>
+  </data>
+  <data name="UnableToSaveAttachment" xml:space="preserve">
+    <value>Manuse salvestamisel ilmnes tõrge. Probleemi jätkumisel lisa fail läbi veebihoidla.</value>
+  </data>
+  <data name="SaveAttachmentSuccess" xml:space="preserve">
+    <value>Manus on edukalt lisatud</value>
   </data>
 </root>
