@@ -30,9 +30,6 @@ namespace Bit.App.Pages
 
         }
 
-        public Entry MasterPasswordEntry { get; set; }
-        public Entry PinEntry { get; set; }
-
         public async Task PromptFingerprintAfterResumeAsync()
         {
             if (_vm.FingerprintLock)

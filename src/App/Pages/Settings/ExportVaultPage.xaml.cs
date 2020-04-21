@@ -17,7 +17,6 @@ namespace Bit.App.Pages
             _vm = BindingContext as ExportVaultPageViewModel;
             _vm.Page = this;
             _fileFormatPicker.ItemDisplayBinding = new Binding("Value");
-            MasterPasswordEntry = _masterPassword;
         }
 
         protected async override void OnAppearing()
@@ -39,7 +38,6 @@ namespace Bit.App.Pages
                     });
                 }
             });
-            RequestFocus(_masterPassword);
         }
 
         protected async override void OnDisappearing()
@@ -47,9 +45,6 @@ namespace Bit.App.Pages
             base.OnDisappearing();
             _broadcasterService.Unsubscribe(nameof(ExportVaultPage));
         }
-
-        public Entry MasterPasswordEntry { get; set; }
-
         private async void Close_Clicked(object sender, System.EventArgs e)
         {
             if (DoOnce())

@@ -298,8 +298,7 @@ namespace Bit.App.Pages
         public void TogglePassword()
         {
             ShowPassword = !ShowPassword;
-            var page = (Page as LockPage);
-            var entry = PinLock ? page.PinEntry : page.MasterPasswordEntry;
+          
         }
 
         public async Task PromptFingerprintAsync()

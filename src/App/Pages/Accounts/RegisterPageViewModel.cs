@@ -146,13 +146,11 @@ namespace Bit.App.Pages
         public void TogglePassword()
         {
             ShowPassword = !ShowPassword;
-            (Page as RegisterPage).MasterPasswordEntry.Focus();
         }
 
         public void ToggleConfirmPassword()
         {
             ShowPassword = !ShowPassword;
-            (Page as RegisterPage).ConfirmMasterPasswordEntry.Focus();
         }
     }
 }

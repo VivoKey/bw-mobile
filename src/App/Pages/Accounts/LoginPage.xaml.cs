@@ -27,15 +27,12 @@ namespace Bit.App.Pages
             _vm.StartTwoFactorAction = () => Device.BeginInvokeOnMainThread(async () => await StartTwoFactorAsync());
             _vm.LoggedInAction = () => Device.BeginInvokeOnMainThread(async () => await LoggedInAsync());
             _vm.Email = email;
-            MasterPasswordEntry = _masterPassword;
             if (Device.RuntimePlatform == Device.Android)
             {
                 ToolbarItems.RemoveAt(0);
             }
 
         }
-
-        public Entry MasterPasswordEntry { get; set; }
 
         protected override async void OnAppearing()
         {

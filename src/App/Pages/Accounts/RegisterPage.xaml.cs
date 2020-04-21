@@ -24,8 +24,6 @@ namespace Bit.App.Pages
                     await homePage.DismissRegisterPageAndLogInAsync(_vm.Email);
                 }
             };
-            MasterPasswordEntry = _masterPassword;
-            ConfirmMasterPasswordEntry = _confirmMasterPassword;
             if (Device.RuntimePlatform == Device.Android)
             {
                 ToolbarItems.RemoveAt(0);
@@ -38,9 +36,6 @@ namespace Bit.App.Pages
             _confirmMasterPassword.ReturnType = ReturnType.Next;
             _confirmMasterPassword.ReturnCommand = new Command(() => _hint.Focus());
         }
-
-        public Entry MasterPasswordEntry { get; set; }
-        public Entry ConfirmMasterPasswordEntry { get; set; }
 
         protected override void OnAppearing()
         {

@@ -79,7 +79,6 @@ namespace Bit.App.Pages
         public void TogglePassword()
         {
             ShowPassword = !ShowPassword;
-            (Page as ExportVaultPage).MasterPasswordEntry.Focus();
         }
 
         public Command ExportVaultCommand { get; }
