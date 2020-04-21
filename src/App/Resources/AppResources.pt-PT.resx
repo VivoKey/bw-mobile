@@ -728,8 +728,8 @@
     <value>Não existem itens no seu cofre para {0}.</value>
     <comment>This is used for the autofill service. ex. "There are no items in your vault for twitter.com".</comment>
   </data>
-  <data name="BitwardenAutofillServiceNotification" xml:space="preserve">
-    <value>Quando vê uma notificação de auto-preenchimento do Bitwarden, pode tocar na mesma para iniciar o serviço de auto-preenchimento.</value>
+  <data name="BitwardenAutofillServiceOverlay" xml:space="preserve">
+    <value>Quando seleciona um campo de entrada e vê uma sobreposição de auto-preenchimento do Bitwarden, irá poder tocar neste para iniciar o serviço de auto-preenchimento.</value>
   </data>
   <data name="BitwardenAutofillServiceNotificationContent" xml:space="preserve">
     <value>Toque nesta notificação para auto-preencher um item do seu cofre.</value>
@@ -778,24 +778,6 @@
   </data>
   <data name="ShareVault" xml:space="preserve">
     <value>Partilhar o seu cofre</value>
-  </data>
-  <data name="AutofillPasswordField" xml:space="preserve">
-    <value>Scanear quando o campo de palavra-passe está focado</value>
-  </data>
-  <data name="AutofillPasswordFieldDescription" xml:space="preserve">
-    <value>Apenas scanear o ecrã por campos e oferecer uma notificação de auto-preenchimento quando seleciona um campo de palavra-passe. Esta definição pode ajudar a conservar a vida da bateria.</value>
-  </data>
-  <data name="AutofillPersistNotification" xml:space="preserve">
-    <value>Notificação persistente</value>
-  </data>
-  <data name="AutofillPersistNotificationDescription" xml:space="preserve">
-    <value>Oferecer sempre uma notificação de auto-preenchimento e apenas scanear por campos após tentar um auto-preenchimento. Esta definição pode ajudar a conservar a vida da bateria.</value>
-  </data>
-  <data name="AutofillAlways" xml:space="preserve">
-    <value>Scanear sempre</value>
-  </data>
-  <data name="AutofillAlwaysDescription" xml:space="preserve">
-    <value>Scanear sempre o ecrã por campos e apenas oferecer uma notificação de auto-preenchimento se forem encontrados campos de palavra-passe. Esta é a predefinição.</value>
   </data>
   <data name="CannotOpenApp" xml:space="preserve">
     <value>Não é possível abrir a aplicação "{0}".</value>
@@ -1579,12 +1561,68 @@
     <value>A sua sessão expirou.</value>
   </data>
   <data name="BiometricsDirection" xml:space="preserve">
-    <value>Use biometria para verificar.</value>
+    <value>Utilizar biometria para verificar.</value>
   </data>
   <data name="Biometrics" xml:space="preserve">
     <value>Biométrica</value>
   </data>
   <data name="UseBiometricsToUnlock" xml:space="preserve">
-    <value>Use Biometria para Desbloquear</value>
+    <value>Utilizar biometria para desbloquear</value>
+  </data>
+  <data name="AccessibilityOverlayPermissionAlert" xml:space="preserve">
+    <value>O Bitwarden precisa da sua atenção - Veja o "Serviço de acessibilidade de auto-preenchimento" nas Definições do Bitwarden</value>
+  </data>
+  <data name="BitwardenAutofillServiceOverlayPermission" xml:space="preserve">
+    <value>3. No ecrã Definições da App para o Bitwarden no Android, vá às opções "Sobrepor a outras aplicações" (em Avançadas) e toque na opção para ativar o suporte de sobreposição.</value>
+  </data>
+  <data name="OverlayPermission" xml:space="preserve">
+    <value>Permissão</value>
+  </data>
+  <data name="BitwardenAutofillServiceOpenOverlayPermissionSettings" xml:space="preserve">
+    <value>Abrir definições de permissões de sobreposição</value>
+  </data>
+  <data name="BitwardenAutofillServiceStep3" xml:space="preserve">
+    <value>3. No ecrã Definições da App para o Bitwarden no Android, selecione "Sobrepor a outras aplicações" (em "Avançadas") e toque na opção para ativar a sobreposição.</value>
+  </data>
+  <data name="Denied" xml:space="preserve">
+    <value>Negado</value>
+  </data>
+  <data name="Granted" xml:space="preserve">
+    <value>Concedido</value>
+  </data>
+  <data name="FileFormat" xml:space="preserve">
+    <value>Formato do ficheiro</value>
+  </data>
+  <data name="ExportVaultMasterPasswordDescription" xml:space="preserve">
+    <value>Introduza a sua palavra-passe mestra para exportar os dados do seu cofre.</value>
+  </data>
+  <data name="ExportVaultWarning" xml:space="preserve">
+    <value>Esta exportação contém os dados do seu cofre num formato desencriptado. Não deve armazenar ou enviar o ficheiro exportado através de canais inseguros (como o email). Elimine-o imediatamente quando terminar de o utilizar.</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Aviso</value>
+  </data>
+  <data name="ExportVaultFailure" xml:space="preserve">
+    <value>Houve um problema a exportar o seu cofre. Se o problema persistir, irá necessitar de o exportar através do cofre web.</value>
+  </data>
+  <data name="ExportVaultSuccess" xml:space="preserve">
+    <value>Cofre exportado com sucesso</value>
+  </data>
+  <data name="Clone" xml:space="preserve">
+    <value>Clonar</value>
+    <comment>Clone an entity (verb).</comment>
+  </data>
+  <data name="PasswordGeneratorPolicyInEffect" xml:space="preserve">
+    <value>Uma ou mais políticas da organização estão a afetar as suas definições do gerador.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Abrir</value>
+    <comment>Button text for an open operation (verb).</comment>
+  </data>
+  <data name="UnableToSaveAttachment" xml:space="preserve">
+    <value>Houve um problema ao guardar este anexo. Se o problema persistir, poderá guardá-lo através do cofre web.</value>
+  </data>
+  <data name="SaveAttachmentSuccess" xml:space="preserve">
+    <value>Anexo guardado com sucesso</value>
   </data>
 </root>

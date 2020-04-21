@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Android.Content;
-using Android.Content.Res;
 using Android.Graphics;
 using Android.OS;
 using Android.Provider;
@@ -11,7 +10,6 @@ using Android.Views.Accessibility;
 using Android.Widget;
 using Bit.App.Resources;
 using Bit.Core;
-using Plugin.CurrentActivity;
 
 namespace Bit.Droid.Accessibility
 {
@@ -20,6 +18,8 @@ namespace Bit.Droid.Accessibility
         public static Credentials LastCredentials = null;
         public static string SystemUiPackage = "com.android.systemui";
         public static string BitwardenTag = "bw_access";
+        public static bool IsAutofillTileAdded = false;
+        public static bool IsAccessibilityBroadcastReady = false;
 
         public static Dictionary<string, Browser> SupportedBrowsers => new List<Browser>
         {
@@ -40,7 +40,7 @@ namespace Bit.Droid.Accessibility
             new Browser("org.iron.srware", "url_bar"),
             new Browser("com.sec.android.app.sbrowser", "location_bar_edit_text"),
             new Browser("com.sec.android.app.sbrowser.beta", "location_bar_edit_text"),
-            new Browser("com.yandex.browser", "bro_omnibar_address_title_text",
+            new Browser("com.yandex.browser", "bro_omnibar_address_title_text,bro_omnibox_collapsed_title",
                 (s) => s.Split(new char[]{' ', ' '}).FirstOrDefault()), // 0 = Regular Space, 1 = No-break space (00A0)
             new Browser("org.mozilla.firefox", "url_bar_title"),
             new Browser("org.mozilla.firefox_beta", "url_bar_title"),
@@ -75,7 +75,9 @@ namespace Bit.Droid.Accessibility
             new Browser("jp.co.fenrir.android.sleipnir_black", "url_text"),
             new Browser("jp.co.fenrir.android.sleipnir_test", "url_text"),
             new Browser("com.vivaldi.browser", "url_bar"),
+            new Browser("com.vivaldi.browser.snapshot", "url_bar"),
             new Browser("com.feedback.browser.wjbrowser", "addressbar_url"),
+            new Browser("com.naver.whale", "url_bar"),
         }.ToDictionary(n => n.PackageName);
 
         // Known packages to skip
@@ -103,7 +105,7 @@ namespace Bit.Droid.Accessibility
         {
             var testNodes = GetWindowNodes(root, e, n => n.ViewIdResourceName != null && n.Text != null, false);
             var testNodesData = testNodes.Select(n => new { id = n.ViewIdResourceName, text = n.Text });
-            foreach(var node in testNodesData)
+            foreach (var node in testNodesData)
             {
                 System.Diagnostics.Debug.WriteLine("Node: {0} = {1}", node.id, node.text);
             }
@@ -112,15 +114,24 @@ namespace Bit.Droid.Accessibility
         public static string GetUri(AccessibilityNodeInfo root)
         {
             var uri = string.Concat(Constants.AndroidAppProtocol, root.PackageName);
-            if(SupportedBrowsers.ContainsKey(root.PackageName))
+            if (SupportedBrowsers.ContainsKey(root.PackageName))
             {
                 var browser = SupportedBrowsers[root.PackageName];
-                var addressNode = root.FindAccessibilityNodeInfosByViewId(
-                    $"{root.PackageName}:id/{browser.UriViewId}").FirstOrDefault();
-                if(addressNode != null)
+                AccessibilityNodeInfo addressNode = null;
+                foreach (var uriViewId in browser.UriViewId.Split(","))
+                {
+                    addressNode = root.FindAccessibilityNodeInfosByViewId(
+                        $"{root.PackageName}:id/{uriViewId}").FirstOrDefault();
+                    if (addressNode != null)
+                    {
+                        break;
+                    }
+                }
+
+                if (addressNode != null)
                 {
                     uri = ExtractUri(uri, addressNode, browser);
-                    addressNode.Dispose();
+                    addressNode.Recycle();
                 }
                 else
                 {
@@ -134,28 +145,28 @@ namespace Bit.Droid.Accessibility
 
         public static string ExtractUri(string uri, AccessibilityNodeInfo addressNode, Browser browser)
         {
-            if(addressNode?.Text == null)
+            if (addressNode?.Text == null)
             {
                 return uri;
             }
-            if(addressNode.Text == null)
+            if (addressNode.Text == null)
             {
                 return uri;
             }
             uri = browser.GetUriFunction(addressNode.Text)?.Trim();
-            if(uri != null && uri.Contains("."))
+            if (uri != null && uri.Contains("."))
             {
-                if(!uri.Contains("://") && !uri.Contains(" "))
+                if (!uri.Contains("://") && !uri.Contains(" "))
                 {
                     uri = string.Concat("http://", uri);
                 }
-                else if(Build.VERSION.SdkInt <= BuildVersionCodes.KitkatWatch)
+                else if (Build.VERSION.SdkInt <= BuildVersionCodes.KitkatWatch)
                 {
                     var parts = uri.Split(new string[] { ". " }, StringSplitOptions.None);
-                    if(parts.Length > 1)
+                    if (parts.Length > 1)
                     {
                         var urlPart = parts.FirstOrDefault(p => p.StartsWith("http"));
-                        if(urlPart != null)
+                        if (urlPart != null)
                         {
                             uri = urlPart.Trim();
                         }
@@ -170,11 +181,11 @@ namespace Bit.Droid.Accessibility
         /// </summary>
         public static bool NeedToAutofill(Credentials credentials, string currentUriString)
         {
-            if(credentials == null)
+            if (credentials == null)
             {
                 return false;
             }
-            if(Uri.TryCreate(credentials.LastUri, UriKind.Absolute, out Uri lastUri) &&
+            if (Uri.TryCreate(credentials.LastUri, UriKind.Absolute, out Uri lastUri) &&
                 Uri.TryCreate(currentUriString, UriKind.Absolute, out Uri currentUri))
             {
                 return lastUri.Host == currentUri.Host;
@@ -191,7 +202,7 @@ namespace Bit.Droid.Accessibility
             IEnumerable<AccessibilityNodeInfo> passwordNodes)
         {
             FillEditText(usernameNode, LastCredentials?.Username);
-            foreach(var n in passwordNodes)
+            foreach (var n in passwordNodes)
             {
                 FillEditText(n, LastCredentials?.Password);
             }
@@ -199,7 +210,7 @@ namespace Bit.Droid.Accessibility
 
         public static void FillEditText(AccessibilityNodeInfo editTextNode, string value)
         {
-            if(editTextNode == null || value == null)
+            if (editTextNode == null || value == null)
             {
                 return;
             }
@@ -212,31 +223,35 @@ namespace Bit.Droid.Accessibility
             Func<AccessibilityNodeInfo, bool> condition, bool disposeIfUnused, NodeList nodes = null,
             int recursionDepth = 0)
         {
-            if(nodes == null)
+            if (nodes == null)
             {
                 nodes = new NodeList();
             }
             var dispose = disposeIfUnused;
-            if(n != null && recursionDepth < 50)
+            if (n != null && recursionDepth < 100)
             {
                 var add = n.WindowId == e.WindowId &&
                     !(n.ViewIdResourceName?.StartsWith(SystemUiPackage) ?? false) &&
                     condition(n);
-                if(add)
+                if (add)
                 {
                     dispose = false;
                     nodes.Add(n);
                 }
 
-                for(var i = 0; i < n.ChildCount; i++)
+                for (var i = 0; i < n.ChildCount; i++)
                 {
                     var childNode = n.GetChild(i);
-                    if(i > 100)
+                    if (childNode == null)
+                    {
+                        continue;
+                    }
+                    else if (i > 100)
                     {
                         Android.Util.Log.Info(BitwardenTag, "Too many child iterations.");
                         break;
                     }
-                    else if(childNode.GetHashCode() == n.GetHashCode())
+                    else if (childNode.GetHashCode() == n.GetHashCode())
                     {
                         Android.Util.Log.Info(BitwardenTag, "Child node is the same as parent for some reason.");
                     }
@@ -246,8 +261,9 @@ namespace Bit.Droid.Accessibility
                     }
                 }
             }
-            if(dispose)
+            if (dispose)
             {
+                n?.Recycle();
                 n?.Dispose();
             }
             return nodes;
@@ -267,9 +283,9 @@ namespace Bit.Droid.Accessibility
             IEnumerable<AccessibilityNodeInfo> allEditTexts)
         {
             AccessibilityNodeInfo previousEditText = null;
-            foreach(var editText in allEditTexts)
+            foreach (var editText in allEditTexts)
             {
-                if(editText.Password)
+                if (editText.Password)
                 {
                     return previousEditText;
                 }
@@ -282,28 +298,29 @@ namespace Bit.Droid.Accessibility
         {
             var allEditTexts = GetWindowNodes(root, e, n => EditText(n), false);
             var usernameEditText = GetUsernameEditTextIfPasswordExists(allEditTexts);
-            if(usernameEditText != null)
-            { 
-                var isUsernameEditText = IsSameNode(usernameEditText, e.Source);
-                allEditTexts.Dispose();
-                usernameEditText = null;
-                return isUsernameEditText;
+
+            var isUsernameEditText = false;
+            if (usernameEditText != null)
+            {
+                isUsernameEditText = IsSameNode(usernameEditText, e.Source);
             }
-            return false;
+            allEditTexts.Dispose();
+
+            return isUsernameEditText;
         }
 
-        public static bool IsSameNode(AccessibilityNodeInfo info1, AccessibilityNodeInfo info2)
+        public static bool IsSameNode(AccessibilityNodeInfo node1, AccessibilityNodeInfo node2)
         {
-            if(info1 != null && info2 != null) 
+            if (node1 != null && node2 != null)
             {
-                return info1.Equals(info2) || info1.GetHashCode() == info2.GetHashCode();
+                return node1.Equals(node2) || node1.GetHashCode() == node2.GetHashCode();
             }
             return false;
         }
 
         public static bool OverlayPermitted()
         {
-            if(Build.VERSION.SdkInt >= BuildVersionCodes.M)
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
             {
                 return Settings.CanDrawOverlays(Android.App.Application.Context);
             }
@@ -330,7 +347,7 @@ namespace Bit.Droid.Accessibility
         public static WindowManagerLayoutParams GetOverlayLayoutParams()
         {
             WindowManagerTypes windowManagerType;
-            if(Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
                 windowManagerType = WindowManagerTypes.ApplicationOverlay;
             }
@@ -345,63 +362,183 @@ namespace Bit.Droid.Accessibility
                 windowManagerType,
                 WindowManagerFlags.NotFocusable | WindowManagerFlags.NotTouchModal,
                 Format.Transparent);
-            layoutParams.Gravity = GravityFlags.Bottom | GravityFlags.Left;
+            layoutParams.Gravity = GravityFlags.Top | GravityFlags.Left;
 
             return layoutParams;
         }
 
-        public static Point GetOverlayAnchorPosition(AccessibilityNodeInfo root, AccessibilityNodeInfo anchorView)
+        public static Point GetOverlayAnchorPosition(AccessibilityService service, AccessibilityNodeInfo anchorView, 
+            int overlayViewHeight, bool isOverlayAboveAnchor)
         {
-            var rootRect = new Rect();
-            root.GetBoundsInScreen(rootRect);
-            var rootRectHeight = rootRect.Height();
-
             var anchorViewRect = new Rect();
             anchorView.GetBoundsInScreen(anchorViewRect);
-            var anchorViewRectLeft = anchorViewRect.Left;
-            var anchorViewRectTop = anchorViewRect.Top;
+            var anchorViewX = anchorViewRect.Left;
+            var anchorViewY = isOverlayAboveAnchor ? anchorViewRect.Top : anchorViewRect.Bottom;
+            anchorViewRect.Dispose();
+            
+            if (isOverlayAboveAnchor)
+            {
+                anchorViewY -= overlayViewHeight;
+            }
+            anchorViewY -= GetStatusBarHeight(service);
 
-            var navBarHeight = GetNavigationBarHeight();
-            var calculatedTop = rootRectHeight - anchorViewRectTop - navBarHeight;
-            return new Point(anchorViewRectLeft, calculatedTop);
+            return new Point(anchorViewX, anchorViewY);
         }
 
-        public static Point GetOverlayAnchorPosition(int nodeHash, AccessibilityNodeInfo root, AccessibilityEvent e)
+        public static Point GetOverlayAnchorPosition(AccessibilityService service, AccessibilityNodeInfo anchorNode, 
+            AccessibilityNodeInfo root, IEnumerable<AccessibilityWindowInfo> windows, int overlayViewHeight, 
+            bool isOverlayAboveAnchor)
         {
             Point point = null;
-            var allEditTexts = GetWindowNodes(root, e, n => EditText(n), false);
-            foreach(var node in allEditTexts)
+            if (anchorNode != null)
             {
-                if(node.GetHashCode() == nodeHash)
+                // Update node's info since this is still a reference from an older event
+                anchorNode.Refresh();
+                if (!anchorNode.VisibleToUser)
                 {
-                    point = GetOverlayAnchorPosition(root, node);
-                    break;
+                    return new Point(-1, -1);
+                }
+                if (!anchorNode.Focused)
+                {
+                    return null;
+                }
+
+                // node.VisibleToUser doesn't always give us exactly what we want, so attempt to tighten up the range
+                // of visibility
+                var inputMethodHeight = 0;
+                if (windows != null)
+                {
+                    if (IsStatusBarExpanded(windows))
+                    {
+                        return new Point(-1, -1);
+                    }
+                    inputMethodHeight = GetInputMethodHeight(windows);
+                }
+                var minY = 0;
+                var rootNodeHeight = GetNodeHeight(root);
+                if (rootNodeHeight == -1)
+                {
+                    return null;
+                }
+                var maxY = rootNodeHeight - GetNavigationBarHeight(service) - GetStatusBarHeight(service) -
+                           inputMethodHeight;
+
+                point = GetOverlayAnchorPosition(service, anchorNode, overlayViewHeight, isOverlayAboveAnchor);
+                if (point.Y < minY)
+                {
+                    if (isOverlayAboveAnchor)
+                    {
+                        // view nearing bounds, anchor to bottom
+                        point.X = -1;
+                        point.Y = 0;
+                    }
+                    else
+                    {
+                        // view out of bounds, hide overlay
+                        point.X = -1;
+                        point.Y = -1;
+                    }
+                } 
+                else if (point.Y > (maxY - overlayViewHeight))
+                {
+                    if (isOverlayAboveAnchor)
+                    {
+                        // view out of bounds, hide overlay
+                        point.X = -1;
+                        point.Y = -1;
+                    }
+                    else
+                    {
+                        // view nearing bounds, anchor to top
+                        point.X = 0;
+                        point.Y = -1;
+                    }
+                } 
+                else if (isOverlayAboveAnchor && point.Y < (maxY - (overlayViewHeight * 2) - GetNodeHeight(anchorNode)))
+                {
+                    // This else block forces the overlay to return to bottom alignment as soon as space is available
+                    // below the anchor view. Removing this will change the behavior to wait until there isn't enough
+                    // space above the anchor view before returning to bottom alignment.
+                    point.X = -1;
+                    point.Y = 0;
                 }
             }
-            allEditTexts.Dispose();
             return point;
         }
 
-        private static int GetStatusBarHeight()
+        public static bool IsStatusBarExpanded(IEnumerable<AccessibilityWindowInfo> windows)
         {
-            return GetSystemResourceDimenPx("status_bar_height");
-        }
-
-        private static int GetNavigationBarHeight()
-        {
-            return GetSystemResourceDimenPx("navigation_bar_height");
-        }
-
-        private static int GetSystemResourceDimenPx(string resName)
-        {
-            var activity = (MainActivity)CrossCurrentActivity.Current.Activity;
-            var barHeight = 0;
-            var resourceId = activity.Resources.GetIdentifier(resName, "dimen", "android");
-            if(resourceId > 0)
+            if (windows != null && windows.Any())
             {
-                barHeight = activity.Resources.GetDimensionPixelSize(resourceId);
+                var isSystemWindowsOnly = true;
+                foreach (var window in windows)
+                {
+                    if (window.Type != AccessibilityWindowType.System)
+                    {
+                        isSystemWindowsOnly = false;
+                        break;
+                    }
+                }
+                return isSystemWindowsOnly;
             }
-            return barHeight;
+            return false;
+        }
+
+        public static int GetInputMethodHeight(IEnumerable<AccessibilityWindowInfo> windows)
+        {
+            var inputMethodWindowHeight = 0;
+            if (windows != null)
+            {
+                foreach (var window in windows)
+                {
+                    if (window.Type == AccessibilityWindowType.InputMethod)
+                    {
+                        var windowRect = new Rect();
+                        window.GetBoundsInScreen(windowRect);
+                        inputMethodWindowHeight = windowRect.Height();
+                        break;
+                    }
+                }
+            }
+            return inputMethodWindowHeight;
+        }
+        
+        public static bool IsAutofillServicePromptVisible(IEnumerable<AccessibilityWindowInfo> windows)
+        {
+            return windows?.Any(w => w.Title?.ToLower().Contains("autofill") ?? false) ?? false;
+        }
+
+        public static int GetNodeHeight(AccessibilityNodeInfo node)
+        {
+            if (node == null)
+            {
+                return -1;
+            }
+            var nodeRect = new Rect();
+            node.GetBoundsInScreen(nodeRect);
+            var nodeRectHeight = nodeRect.Height();
+            nodeRect.Dispose();
+            return nodeRectHeight;
+        }
+
+        private static int GetStatusBarHeight(AccessibilityService service)
+        {
+            return GetSystemResourceDimenPx(service, "status_bar_height");
+        }
+
+        private static int GetNavigationBarHeight(AccessibilityService service)
+        {
+            return GetSystemResourceDimenPx(service, "navigation_bar_height");
+        }
+
+        private static int GetSystemResourceDimenPx(AccessibilityService service, string resName)
+        {
+            var resourceId = service.Resources.GetIdentifier(resName, "dimen", "android");
+            if (resourceId > 0)
+            {
+                return service.Resources.GetDimensionPixelSize(resourceId);
+            }
+            return 0;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Bit.Core.Utilities
 
         public static void Init(string customUserAgent = null)
         {
-            if(Inited)
+            if (Inited)
             {
                 return;
             }
@@ -47,18 +47,20 @@ namespace Bit.Core.Utilities
             searchService = new SearchService(cipherService);
             var lockService = new LockService(cryptoService, userService, platformUtilsService, storageService,
                 folderService, cipherService, collectionService, searchService, messagingService, null);
+            var policyService = new PolicyService(storageService, userService);
             var syncService = new SyncService(userService, apiService, settingsService, folderService,
-                cipherService, cryptoService, collectionService, storageService, messagingService, (bool expired) =>
+                cipherService, cryptoService, collectionService, storageService, messagingService, policyService,
+                (bool expired) =>
                 {
                     messagingService.Send("logout", expired);
                     return Task.FromResult(0);
                 });
             var passwordGenerationService = new PasswordGenerationService(cryptoService, storageService,
-                cryptoFunctionService);
+                cryptoFunctionService, policyService);
             var totpService = new TotpService(storageService, cryptoFunctionService);
             var authService = new AuthService(cryptoService, apiService, userService, tokenService, appIdService,
                 i18nService, platformUtilsService, messagingService, lockService);
-            // TODO: export service
+            var exportService = new ExportService(folderService, cipherService);
             var auditService = new AuditService(cryptoFunctionService, apiService);
             var environmentService = new EnvironmentService(apiService, storageService);
             var eventService = new EventService(storageService, apiService, userService, cipherService);
@@ -75,11 +77,13 @@ namespace Bit.Core.Utilities
             Register<IFolderService>("folderService", folderService);
             Register<ICollectionService>("collectionService", collectionService);
             Register<ISearchService>("searchService", searchService);
+            Register<IPolicyService>("policyService", policyService);
             Register<ISyncService>("syncService", syncService);
             Register<ILockService>("lockService", lockService);
             Register<IPasswordGenerationService>("passwordGenerationService", passwordGenerationService);
             Register<ITotpService>("totpService", totpService);
             Register<IAuthService>("authService", authService);
+            Register<IExportService>("exportService", exportService);
             Register<IAuditService>("auditService", auditService);
             Register<IEnvironmentService>("environmentService", environmentService);
             Register<IEventService>("eventService", eventService);
@@ -87,7 +91,7 @@ namespace Bit.Core.Utilities
 
         public static void Register<T>(string serviceName, T obj)
         {
-            if(RegisteredServices.ContainsKey(serviceName))
+            if (RegisteredServices.ContainsKey(serviceName))
             {
                 throw new Exception($"Service {serviceName} has already been registered.");
             }
@@ -96,11 +100,11 @@ namespace Bit.Core.Utilities
 
         public static T Resolve<T>(string serviceName, bool dontThrow = false)
         {
-            if(RegisteredServices.ContainsKey(serviceName))
+            if (RegisteredServices.ContainsKey(serviceName))
             {
                 return (T)RegisteredServices[serviceName];
             }
-            if(dontThrow)
+            if (dontThrow)
             {
                 return (T)(object)null;
             }

@@ -7,7 +7,6 @@
     xmlns:u="clr-namespace:Bit.App.Utilities"
     xmlns:controls="clr-namespace:Bit.App.Controls"
     xmlns:effects="clr-namespace:Bit.App.Effects"
-    xmlns:fab="clr-namespace:Refractored.FabControl;assembly=Refractored.FabControl"
     xmlns:views="clr-namespace:Bit.Core.Models.View;assembly=BitwardenCore"
     x:DataType="pages:ViewPageViewModel"
     x:Name="_page"
@@ -32,7 +31,7 @@
                      Clicked="Share_Clicked"
                      Order="Secondary" />
             <ToolbarItem Text="{u:I18n Close}" Clicked="Close_Clicked" Order="Primary" Priority="-1"
-                         x:Name="_closeItem" x:Key="closeItem"  />
+                         x:Name="_closeItem" x:Key="closeItem" />
             <ToolbarItem Text="{u:I18n Edit}" Clicked="EditToolbarItem_Clicked" Order="Primary"
                          x:Name="_editItem" x:Key="editItem" />
             <ToolbarItem Icon="more_vert.png" Clicked="More_Clicked" Order="Primary"
@@ -43,6 +42,8 @@
                          x:Name="_attachmentsItem" x:Key="attachmentsItem" />
             <ToolbarItem Text="{u:I18n Delete}" Clicked="Delete_Clicked" Order="Secondary" IsDestructive="True"
                          x:Name="_deleteItem" x:Key="deleteItem" />
+            <ToolbarItem Text="{u:I18n Clone}" Clicked="Clone_Clicked" Order="Secondary"
+                         x:Name="_cloneItem" x:Key="cloneItem" />
 
             <ScrollView x:Key="scrollView" x:Name="_scrollView">
                 <StackLayout Spacing="20" x:Name="_mainLayout">
@@ -185,7 +186,7 @@
                                     Grid.RowSpan="2"
                                     HorizontalOptions="End"
                                     HorizontalTextAlignment="End"
-                                    VerticalOptions="CenterAndExpand"/>
+                                    VerticalOptions="CenterAndExpand" />
                                 <controls:FaButton 
                                     StyleClass="box-row-button, box-row-button-platform"
                                     Text="&#xf0ea;"
@@ -226,7 +227,7 @@
                             </StackLayout>
                             
                             <BoxView StyleClass="box-row-separator"
-                                     IsVisible="{Binding Cipher.Card.CardholderName, Converter={StaticResource stringHasValue}}"/>
+                                     IsVisible="{Binding Cipher.Card.CardholderName, Converter={StaticResource stringHasValue}}" />
                             <Grid StyleClass="box-row"
                                   IsVisible="{Binding Cipher.Card.Number, Converter={StaticResource stringHasValue}}">
                                 <Grid.RowDefinitions>
@@ -377,7 +378,7 @@
                                     StyleClass="box-value" />
                             </StackLayout>
                             <BoxView StyleClass="box-row-separator"
-                                     IsVisible="{Binding Cipher.Identity.SSN, Converter={StaticResource stringHasValue}}"/>
+                                     IsVisible="{Binding Cipher.Identity.SSN, Converter={StaticResource stringHasValue}}" />
                             <StackLayout StyleClass="box-row"
                                          IsVisible="{Binding Cipher.Identity.PassportNumber, Converter={StaticResource stringHasValue}}">
                                 <Label
@@ -677,14 +678,19 @@
             AbsoluteLayout.LayoutFlags="All"
             AbsoluteLayout.LayoutBounds="0, 0, 1, 1">
         </ContentView>
-        <fab:FloatingActionButtonView
+        <Button
             x:Name="_fab"
-            ImageName="pencil.png"
+            Image="pencil.png"
+            Clicked="EditButton_Clicked"
+            Style="{StaticResource btn-fab}"
             AbsoluteLayout.LayoutFlags="PositionProportional"
             AbsoluteLayout.LayoutBounds="1, 1, AutoSize, AutoSize"
             AutomationProperties.IsInAccessibleTree="True"
             AutomationProperties.Name="{u:I18n EditItem}">
-        </fab:FloatingActionButtonView>
+            <Button.Effects>
+                <effects:FabShadowEffect />
+            </Button.Effects>
+        </Button>
     </AbsoluteLayout>
 
 </pages:BaseContentPage>
