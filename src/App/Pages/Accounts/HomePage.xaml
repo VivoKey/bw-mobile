@@ -37,8 +37,6 @@
             <StackLayout Spacing="5">
                 <Button Text="{u:I18n LogIn}" 
                     Clicked="LogIn_Clicked"></Button>
-                <Button Text="{u:I18n CreateAccount}"
-                    Clicked="Register_Clicked"></Button>
             </StackLayout>
         </StackLayout>
     </StackLayout>

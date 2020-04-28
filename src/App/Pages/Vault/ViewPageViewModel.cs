@@ -5,6 +5,7 @@ using Bit.Core.Abstractions;
 using Bit.Core.Exceptions;
 using Bit.Core.Models.View;
 using Bit.Core.Utilities;
+using Markdig;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,6 +41,7 @@ namespace Bit.App.Pages
         public Image cardImageProper;
         private byte[] _attachmentData;
         private string _attachmentFilename;
+        public string mdnoteshtml;
 
 
         public ViewPageViewModel()
@@ -105,6 +107,10 @@ namespace Bit.App.Pages
         public Image CardImage
         {
             get => cardImageProper;
+        }
+        public string MDNotes
+        {
+            get => Markdown.ToHtml(Cipher.Notes);
         }
         public bool FirstCardImg
         {

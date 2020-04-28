@@ -22,7 +22,7 @@ namespace Bit.Core.Models.Data
             RevisionDate = response.RevisionDate;
             Type = response.Type;
             Name = response.Name;
-            Notes = Markdown.ToHtml(response.Notes);
+            Notes = response.Notes;
             CollectionIds = collectionIds?.ToList() ?? response.CollectionIds;
 
             switch (Type)
