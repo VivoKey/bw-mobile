@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Bit.Core</RootNamespace>
-    <AssemblyName>BitwardenCore</AssemblyName>
+    <AssemblyName>VKVCore</AssemblyName>
     <Configurations>Debug;Release;FDroid</Configurations>
   </PropertyGroup>
 

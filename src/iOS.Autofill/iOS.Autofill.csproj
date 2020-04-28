@@ -7,7 +7,7 @@
     <ProjectTypeGuids>{EE2C853D-36AF-4FDB-B1AD-8E90477E2198};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <RootNamespace>Bit.iOS.Autofill</RootNamespace>
-    <AssemblyName>BitwardeniOSAutofill</AssemblyName>
+    <AssemblyName>VivoKeyVaultiOSAutofill</AssemblyName>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <AppDesignerFolder>Properties</AppDesignerFolder>
   </PropertyGroup>

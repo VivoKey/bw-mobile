@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Bit.App</RootNamespace>
-    <AssemblyName>BitwardenApp</AssemblyName>
+    <AssemblyName>VKVApp</AssemblyName>
     <Configurations>Debug;Release;FDroid</Configurations>
   </PropertyGroup>
 
