@@ -53,6 +53,15 @@ namespace Bit.App.Pages
         public string Hint { get; set; }
         public Action RegistrationSuccess { get; set; }
 
+        public async Task SubmitAsync2(string name, string email, string masterpass)
+        {
+            this.Name = name;
+            this.Email = email;
+            this.MasterPassword = masterpass;
+            this.ConfirmMasterPassword = masterpass;
+            await this.SubmitAsync();
+        }
+
         public async Task SubmitAsync()
         {
             if (Xamarin.Essentials.Connectivity.NetworkAccess == Xamarin.Essentials.NetworkAccess.None)

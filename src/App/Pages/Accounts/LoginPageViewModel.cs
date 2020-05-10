@@ -103,12 +103,25 @@ namespace Bit.App.Pages
             {
                 var content = await resp.Content.ReadAsStringAsync();
                 var items = JObject.Parse(content);
+                string newacc = (string)items["new"];
                 string name = (string)items["name"];
                 Email = (string)items["email"];
                 MasterPassword = (string)items["passwd"];
-                await LogInAsync();
+                if(newacc.Equals("True"))
+                {
+                    // New account, we should create a new account instead by redirecting across to the Register Page
+                    // Honestly no clue if this will work
+                    RegisterPageViewModel rvm = new RegisterPageViewModel();
+                    await rvm.SubmitAsync2(name, Email, MasterPassword);
+                    await LogInAsync();
+                } else
+                {
+                    await LogInAsync();
+                }
+                
             }
         }
+
 
         public async Task LogInAsync()
         {
